@@ -1107,6 +1107,203 @@ export const gridAssetTable = pgTable(
   ],
 );
 
+/* ------------------------------------------------------------------------------------
+ * Utility domain: what gates the work.
+ *
+ * Most utility construction cannot start on demand. It waits on a switching clearance
+ * from the system operator, on a permit from a municipality or railroad, and on an
+ * inspection signature before the next step is allowed. Missing an approved outage window
+ * is the single most expensive schedule failure on a T&D job, so these are first-class
+ * records rather than notes on a task.
+ * ---------------------------------------------------------------------------------- */
+
+export const outageTable = pgTable(
+  "outage",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    projectId: text("project_id")
+      .notNull()
+      .references(() => projectTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    circuitId: text("circuit_id").references(() => circuitTable.id, {
+      onDelete: "set null",
+      onUpdate: "cascade",
+    }),
+    /** The utility's clearance or switching-order number. */
+    outageNumber: text("outage_number"),
+    title: text("title").notNull(),
+    /**
+     * planned_outage | clearance | switching_order | hot_line_tag | energization
+     * A hot line tag is not an outage but is tracked here because it gates work the
+     * same way.
+     */
+    type: text("type").notNull().default("planned_outage"),
+    /** draft | requested | approved | denied | active | released | cancelled */
+    status: text("status").notNull().default("draft"),
+    /** Requested window, then the window the utility actually granted, then reality. */
+    requestedStart: timestamp("requested_start", { mode: "date" }),
+    requestedEnd: timestamp("requested_end", { mode: "date" }),
+    approvedStart: timestamp("approved_start", { mode: "date" }),
+    approvedEnd: timestamp("approved_end", { mode: "date" }),
+    actualStart: timestamp("actual_start", { mode: "date" }),
+    actualEnd: timestamp("actual_end", { mode: "date" }),
+    requestedById: text("requested_by_id").references(() => userTable.id, {
+      onDelete: "set null",
+      onUpdate: "cascade",
+    }),
+    /** Free text: the utility-side approver is rarely a user of this system. */
+    approvedBy: text("approved_by"),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("outage_projectId_idx").on(table.projectId),
+    index("outage_circuitId_idx").on(table.circuitId),
+    index("outage_status_idx").on(table.status),
+    index("outage_requestedById_idx").on(table.requestedById),
+  ],
+);
+
+/** Many-to-many: one clearance usually covers several tasks. */
+export const taskOutageTable = pgTable(
+  "task_outage",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    taskId: text("task_id")
+      .notNull()
+      .references(() => taskTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    outageId: text("outage_id")
+      .notNull()
+      .references(() => outageTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("task_outage_taskId_idx").on(table.taskId),
+    index("task_outage_outageId_idx").on(table.outageId),
+    unique("task_outage_task_outage_unique").on(table.taskId, table.outageId),
+  ],
+);
+
+export const permitTable = pgTable(
+  "permit",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    projectId: text("project_id")
+      .notNull()
+      .references(() => projectTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    gridAssetId: text("grid_asset_id").references(
+      (): AnyPgColumn => gridAssetTable.id,
+      { onDelete: "set null", onUpdate: "cascade" },
+    ),
+    /**
+     * row_access | road_opening | dot | railroad | swppp | wetlands |
+     * environmental | municipal | other
+     */
+    type: text("type").notNull().default("other"),
+    permitNumber: text("permit_number"),
+    description: text("description"),
+    issuingAuthority: text("issuing_authority"),
+    /** not_required | pending | applied | issued | expired | denied */
+    status: text("status").notNull().default("pending"),
+    appliedAt: timestamp("applied_at", { mode: "date" }),
+    issuedAt: timestamp("issued_at", { mode: "date" }),
+    expiresAt: timestamp("expires_at", { mode: "date" }),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("permit_projectId_idx").on(table.projectId),
+    index("permit_gridAssetId_idx").on(table.gridAssetId),
+    index("permit_status_idx").on(table.status),
+    index("permit_expiresAt_idx").on(table.expiresAt),
+  ],
+);
+
+export const inspectionTable = pgTable(
+  "inspection",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    projectId: text("project_id")
+      .notNull()
+      .references(() => projectTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    taskId: text("task_id").references(() => taskTable.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
+    gridAssetId: text("grid_asset_id").references(
+      (): AnyPgColumn => gridAssetTable.id,
+      { onDelete: "set null", onUpdate: "cascade" },
+    ),
+    /**
+     * rebar | concrete_pour | torque | grounding | megger | hipot |
+     * relay_functional | ct_ratio | oil_sample | punchlist | final
+     */
+    type: text("type").notNull(),
+    description: text("description"),
+    /**
+     * A hold point must pass before its task may be completed. A rebar inspection
+     * before a pour is a hold point; a punchlist walk usually is not.
+     */
+    isHoldPoint: boolean("is_hold_point").default(false).notNull(),
+    /** pending | scheduled | passed | failed | waived */
+    status: text("status").notNull().default("pending"),
+    scheduledFor: timestamp("scheduled_for", { mode: "date" }),
+    performedAt: timestamp("performed_at", { mode: "date" }),
+    inspectorName: text("inspector_name"),
+    result: text("result"),
+    /** Test values: megger readings, torque figures, CT ratios. */
+    readings: jsonb("readings"),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("inspection_projectId_idx").on(table.projectId),
+    index("inspection_taskId_idx").on(table.taskId),
+    index("inspection_gridAssetId_idx").on(table.gridAssetId),
+    index("inspection_status_idx").on(table.status),
+    // Looking up "does this task have an unsatisfied hold point" runs on every
+    // status change, so it gets a covering index.
+    index("inspection_task_holdpoint_idx").on(
+      table.taskId,
+      table.isHoldPoint,
+      table.status,
+    ),
+  ],
+);
+
 // Auth-schema compatible aliases in schema.ts
 export const user = userTable;
 export const session = sessionTable;

@@ -10,12 +10,16 @@ import {
   externalLinkTable,
   githubIntegrationTable,
   gridAssetTable,
+  inspectionTable,
   integrationTable,
   invitationTable,
   labelTable,
   notificationTable,
+  outageTable,
+  permitTable,
   projectTable,
   sessionTable,
+  taskOutageTable,
   taskRelationTable,
   taskReminderSentTable,
   taskTable,
@@ -107,6 +111,9 @@ export const projectTableRelations = relations(
     assets: many(assetTable),
     circuits: many(circuitTable),
     gridAssets: many(gridAssetTable),
+    outages: many(outageTable),
+    permits: many(permitTable),
+    inspections: many(inspectionTable),
     columns: many(columnTable),
     workflowRules: many(workflowRuleTable),
     githubIntegration: many(githubIntegrationTable),
@@ -164,6 +171,8 @@ export const taskTableRelations = relations(taskTable, ({ one, many }) => ({
   sourceRelations: many(taskRelationTable, { relationName: "sourceTask" }),
   targetRelations: many(taskRelationTable, { relationName: "targetTask" }),
   remindersSent: many(taskReminderSentTable),
+  outageLinks: many(taskOutageTable),
+  inspections: many(inspectionTable),
 }));
 
 export const timeEntryTableRelations = relations(timeEntryTable, ({ one }) => ({
@@ -430,5 +439,64 @@ export const gridAssetTableRelations = relations(
     }),
     children: many(gridAssetTable, { relationName: "gridAssetParent" }),
     tasks: many(taskTable),
+  }),
+);
+
+export const outageTableRelations = relations(outageTable, ({ one, many }) => ({
+  project: one(projectTable, {
+    fields: [outageTable.projectId],
+    references: [projectTable.id],
+  }),
+  circuit: one(circuitTable, {
+    fields: [outageTable.circuitId],
+    references: [circuitTable.id],
+  }),
+  requestedBy: one(userTable, {
+    fields: [outageTable.requestedById],
+    references: [userTable.id],
+  }),
+  taskLinks: many(taskOutageTable),
+}));
+
+export const taskOutageTableRelations = relations(
+  taskOutageTable,
+  ({ one }) => ({
+    task: one(taskTable, {
+      fields: [taskOutageTable.taskId],
+      references: [taskTable.id],
+    }),
+    outage: one(outageTable, {
+      fields: [taskOutageTable.outageId],
+      references: [outageTable.id],
+    }),
+  }),
+);
+
+export const permitTableRelations = relations(permitTable, ({ one }) => ({
+  project: one(projectTable, {
+    fields: [permitTable.projectId],
+    references: [projectTable.id],
+  }),
+  gridAsset: one(gridAssetTable, {
+    fields: [permitTable.gridAssetId],
+    references: [gridAssetTable.id],
+  }),
+}));
+
+export const inspectionTableRelations = relations(
+  inspectionTable,
+  ({ one }) => ({
+    project: one(projectTable, {
+      fields: [inspectionTable.projectId],
+      references: [projectTable.id],
+    }),
+    task: one(taskTable, {
+      fields: [inspectionTable.taskId],
+      references: [taskTable.id],
+    }),
+    gridAsset: one(gridAssetTable, {
+      fields: [inspectionTable.gridAssetId],
+      references: [gridAssetTable.id],
+    }),
   }),
 );

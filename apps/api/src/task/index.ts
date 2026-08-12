@@ -112,6 +112,10 @@ const task = new Hono<{
                 v.object({
                   success: v.boolean(),
                   updatedCount: v.number(),
+                  // Tasks left untouched, e.g. an open hold-point inspection.
+                  skipped: v.array(
+                    v.object({ taskId: v.string(), reason: v.string() }),
+                  ),
                 }),
               ),
             },

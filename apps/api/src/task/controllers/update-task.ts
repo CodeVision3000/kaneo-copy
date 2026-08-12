@@ -3,6 +3,7 @@ import { HTTPException } from "hono/http-exception";
 import db from "../../database";
 import { columnTable, taskTable } from "../../database/schema";
 import { publishEvent } from "../../events";
+import { assertHoldPointsCleared } from "../../inspection/assert-hold-points-cleared";
 import { deleteOrphanedAssets } from "../../storage/cleanup-assets";
 import { assertValidTaskStatus } from "../validate-task-fields";
 
@@ -43,6 +44,10 @@ async function updateTask(
   }
 
   await assertValidTaskStatus(status, projectId);
+
+  if (existingTask.status !== status) {
+    await assertHoldPointsCleared(id, status);
+  }
 
   const column = await db.query.columnTable.findFirst({
     where: and(

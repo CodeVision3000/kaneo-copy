@@ -66,6 +66,67 @@ export const gridAssetSchema = v.object({
   completionPercentage: v.optional(v.number()),
 });
 
+export const outageSchema = v.object({
+  id: v.string(),
+  projectId: v.string(),
+  circuitId: v.nullable(v.string()),
+  outageNumber: v.nullable(v.string()),
+  title: v.string(),
+  type: v.string(),
+  status: v.string(),
+  requestedStart: v.nullable(v.date()),
+  requestedEnd: v.nullable(v.date()),
+  approvedStart: v.nullable(v.date()),
+  approvedEnd: v.nullable(v.date()),
+  actualStart: v.nullable(v.date()),
+  actualEnd: v.nullable(v.date()),
+  requestedById: v.nullable(v.string()),
+  approvedBy: v.nullable(v.string()),
+  notes: v.nullable(v.string()),
+  createdAt: v.date(),
+  updatedAt: v.date(),
+  circuitDesignation: v.optional(v.nullable(v.string())),
+  gatedTaskCount: v.optional(v.number()),
+});
+
+export const permitSchema = v.object({
+  id: v.string(),
+  projectId: v.string(),
+  gridAssetId: v.nullable(v.string()),
+  type: v.string(),
+  permitNumber: v.nullable(v.string()),
+  description: v.nullable(v.string()),
+  issuingAuthority: v.nullable(v.string()),
+  status: v.string(),
+  appliedAt: v.nullable(v.date()),
+  issuedAt: v.nullable(v.date()),
+  expiresAt: v.nullable(v.date()),
+  notes: v.nullable(v.string()),
+  createdAt: v.date(),
+  updatedAt: v.date(),
+  gridAssetDesignation: v.optional(v.nullable(v.string())),
+});
+
+export const inspectionSchema = v.object({
+  id: v.string(),
+  projectId: v.string(),
+  taskId: v.nullable(v.string()),
+  gridAssetId: v.nullable(v.string()),
+  type: v.string(),
+  description: v.nullable(v.string()),
+  isHoldPoint: v.boolean(),
+  status: v.string(),
+  scheduledFor: v.nullable(v.date()),
+  performedAt: v.nullable(v.date()),
+  inspectorName: v.nullable(v.string()),
+  result: v.nullable(v.string()),
+  readings: v.nullable(v.record(v.string(), v.unknown())),
+  createdAt: v.date(),
+  updatedAt: v.date(),
+  gridAssetDesignation: v.optional(v.nullable(v.string())),
+  taskTitle: v.optional(v.nullable(v.string())),
+});
+
 export const taskSchema = v.object({
   id: v.string(),
   projectId: v.string(),

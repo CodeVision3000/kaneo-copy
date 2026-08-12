@@ -37,6 +37,7 @@ import githubIntegration, {
   handleGithubWebhookRoute,
 } from "./github-integration";
 import gridAsset from "./grid-asset";
+import inspection from "./inspection";
 import getInstanceStatus from "./instance/controllers/get-instance-status";
 import invitation from "./invitation";
 import label from "./label";
@@ -46,6 +47,8 @@ import { migrateUtilityVocabulary } from "./migrations/utility-vocabulary-migrat
 import notification from "./notification";
 import notificationPreferences from "./notification-preferences";
 import oauth from "./oauth";
+import outage from "./outage";
+import permit from "./permit";
 import { initializePlugins } from "./plugins";
 import { migrateGitHubIntegration } from "./plugins/github/migration";
 import project from "./project";
@@ -559,6 +562,9 @@ export function createApp() {
   const columnApi = api.route("/column", column);
   const circuitApi = api.route("/circuit", circuit);
   const gridAssetApi = api.route("/grid-asset", gridAsset);
+  const outageApi = api.route("/outage", outage);
+  const permitApi = api.route("/permit", permit);
+  const inspectionApi = api.route("/inspection", inspection);
   const activityApi = api.route("/activity", activity);
   const commentApi = api.route("/comment", comment);
   const timeEntryApi = api.route("/time-entry", timeEntry);
@@ -743,11 +749,14 @@ export function createApp() {
     genericWebhookIntegrationApi,
     githubIntegrationApi,
     giteaIntegrationApi,
+    inspectionApi,
     invitationApi,
     invitationPublicApi,
     labelApi,
     notificationApi,
     notificationPreferencesApi,
+    outageApi,
+    permitApi,
     projectApi,
     publicProjectApi,
     searchApi,
@@ -865,11 +874,14 @@ const {
   genericWebhookIntegrationApi,
   githubIntegrationApi,
   giteaIntegrationApi,
+  inspectionApi,
   invitationApi,
   invitationPublicApi,
   labelApi,
   notificationApi,
   notificationPreferencesApi,
+  outageApi,
+  permitApi,
   projectApi,
   publicProjectApi,
   searchApi,
@@ -896,6 +908,9 @@ export type AppType =
   | typeof circuitApi
   | typeof configApi
   | typeof gridAssetApi
+  | typeof inspectionApi
+  | typeof outageApi
+  | typeof permitApi
   | typeof projectApi
   | typeof taskApi
   | typeof columnApi

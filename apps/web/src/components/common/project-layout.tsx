@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "@tanstack/react-router";
 import {
   CalendarDays,
   Radio,
+  ShieldCheck,
   SquareKanban,
   SquircleDashed,
 } from "lucide-react";
@@ -31,7 +32,7 @@ type ProjectLayoutProps = {
   headerActions?: ReactNode;
   children: ReactNode;
   showViewSwitcher?: boolean;
-  activeView?: "backlog" | "board" | "gantt" | "structures";
+  activeView?: "backlog" | "board" | "gantt" | "structures" | "gating";
 };
 
 export default function ProjectLayout({
@@ -58,7 +59,9 @@ export default function ProjectLayout({
         ? "gantt"
         : location.pathname.includes("/structures")
           ? "structures"
-          : "board");
+          : location.pathname.includes("/gating")
+            ? "gating"
+            : "board");
 
   const handleNavigateToBacklog = () => {
     navigate({
@@ -88,6 +91,13 @@ export default function ProjectLayout({
     });
   };
 
+  const handleNavigateToGating = () => {
+    navigate({
+      to: "/dashboard/workspace/$workspaceId/project/$projectId/gating",
+      params: { workspaceId, projectId },
+    });
+  };
+
   const handleProjectSwitch = (nextProjectId: string) => {
     navigate({
       to:
@@ -97,7 +107,9 @@ export default function ProjectLayout({
             ? "/dashboard/workspace/$workspaceId/project/$projectId/gantt"
             : resolvedView === "structures"
               ? "/dashboard/workspace/$workspaceId/project/$projectId/structures"
-              : "/dashboard/workspace/$workspaceId/project/$projectId/board",
+              : resolvedView === "gating"
+                ? "/dashboard/workspace/$workspaceId/project/$projectId/gating"
+                : "/dashboard/workspace/$workspaceId/project/$projectId/board",
       params: {
         workspaceId,
         projectId: nextProjectId,
@@ -152,6 +164,7 @@ export default function ProjectLayout({
                 onSelectBoard={handleNavigateToBoard}
                 onSelectGantt={handleNavigateToGantt}
                 onSelectStructures={handleNavigateToStructures}
+                onSelectGating={handleNavigateToGating}
                 onSelectProject={handleProjectSwitch}
                 onAddProject={() => setIsCreateProjectModalOpen(true)}
               />
@@ -208,6 +221,18 @@ export default function ProjectLayout({
                 >
                   <Radio className="size-3.5" />
                   Structures
+                </Button>
+                <Button
+                  variant={resolvedView === "gating" ? "secondary" : "ghost"}
+                  size="xs"
+                  onClick={handleNavigateToGating}
+                  className={cn(
+                    "h-6 gap-1.5 rounded-md px-2 text-xs",
+                    resolvedView !== "gating" && "text-muted-foreground",
+                  )}
+                >
+                  <ShieldCheck className="size-3.5" />
+                  Gating
                 </Button>
               </div>
             )}

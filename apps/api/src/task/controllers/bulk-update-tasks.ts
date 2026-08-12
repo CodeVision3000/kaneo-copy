@@ -10,6 +10,7 @@ import {
   workspaceUserTable,
 } from "../../database/schema";
 import { publishEvent } from "../../events";
+import { partitionByHoldPoints } from "../../inspection/assert-hold-points-cleared";
 import {
   assertValidPriority,
   assertValidTaskStatus,
@@ -89,6 +90,7 @@ async function bulkUpdateTasks({
 
   const foundIds = tasks.map((t) => t.id);
   let updatedCount = 0;
+  const skipped: Array<{ taskId: string; reason: string }> = [];
 
   switch (operation) {
     case "updateStatus": {
@@ -111,14 +113,26 @@ async function bulkUpdateTasks({
           .filter((t) => t.projectId === projectId)
           .map((t) => t.id);
 
+        // One task with an open hold point shouldn't fail the whole selection, so
+        // blocked tasks are skipped and reported instead of throwing.
+        const { allowed, blocked } = await partitionByHoldPoints(
+          projectTaskIds,
+          value,
+        );
+        skipped.push(...blocked);
+
+        if (allowed.length === 0) {
+          continue;
+        }
+
         const result = await db
           .update(taskTable)
           .set({ status: value, columnId: column?.id ?? null })
-          .where(inArray(taskTable.id, projectTaskIds));
+          .where(inArray(taskTable.id, allowed));
 
-        updatedCount += result.rowCount ?? projectTaskIds.length;
+        updatedCount += result.rowCount ?? allowed.length;
 
-        for (const taskId of projectTaskIds) {
+        for (const taskId of allowed) {
           await publishEvent("task.status_changed", {
             taskId,
             projectId,
@@ -322,7 +336,9 @@ async function bulkUpdateTasks({
     }
   }
 
-  return { success: true, updatedCount };
+  // Callers need to know work was skipped; silently reporting success would read as
+  // "all done" when hold points blocked part of the selection.
+  return { success: true, updatedCount, skipped };
 }
 
 export default bulkUpdateTasks;

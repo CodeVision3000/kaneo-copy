@@ -4,6 +4,7 @@ import {
   Menu,
   Plus,
   Radio,
+  ShieldCheck,
   SquareKanban,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,11 +20,12 @@ import { cn } from "@/lib/cn";
 type MobileProjectNavProps = {
   workspaceId: string;
   projectId: string;
-  activeView: "backlog" | "board" | "gantt" | "structures";
+  activeView: "backlog" | "board" | "gantt" | "structures" | "gating";
   onSelectBoard: () => void;
   onSelectBacklog: () => void;
   onSelectGantt: () => void;
   onSelectStructures: () => void;
+  onSelectGating: () => void;
   onSelectProject: (projectId: string) => void;
   onAddProject: () => void;
 };
@@ -36,6 +38,7 @@ export default function MobileProjectNav({
   onSelectBacklog,
   onSelectGantt,
   onSelectStructures,
+  onSelectGating,
   onSelectProject,
   onAddProject,
 }: MobileProjectNavProps) {
@@ -111,6 +114,19 @@ export default function MobileProjectNav({
               >
                 <Radio className="size-3.5" />
                 Structures
+              </button>
+              <button
+                type="button"
+                onClick={onSelectGating}
+                className={cn(
+                  "flex w-full items-center justify-center gap-1 whitespace-nowrap rounded-md border px-2 py-1.5 text-xs font-medium transition-colors",
+                  activeView === "gating"
+                    ? "border-border bg-secondary text-foreground"
+                    : "border-transparent text-muted-foreground hover:bg-accent",
+                )}
+              >
+                <ShieldCheck className="size-3.5" />
+                Gating
               </button>
             </div>
           </div>
