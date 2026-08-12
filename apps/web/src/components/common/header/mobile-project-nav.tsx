@@ -1,6 +1,7 @@
 import {
   CalendarDays,
   Check,
+  DollarSign,
   Menu,
   Plus,
   Radio,
@@ -20,12 +21,13 @@ import { cn } from "@/lib/cn";
 type MobileProjectNavProps = {
   workspaceId: string;
   projectId: string;
-  activeView: "backlog" | "board" | "gantt" | "structures" | "gating";
+  activeView: "backlog" | "board" | "gantt" | "structures" | "gating" | "cost";
   onSelectBoard: () => void;
   onSelectBacklog: () => void;
   onSelectGantt: () => void;
   onSelectStructures: () => void;
   onSelectGating: () => void;
+  onSelectCost: () => void;
   onSelectProject: (projectId: string) => void;
   onAddProject: () => void;
 };
@@ -39,6 +41,7 @@ export default function MobileProjectNav({
   onSelectGantt,
   onSelectStructures,
   onSelectGating,
+  onSelectCost,
   onSelectProject,
   onAddProject,
 }: MobileProjectNavProps) {
@@ -127,6 +130,19 @@ export default function MobileProjectNav({
               >
                 <ShieldCheck className="size-3.5" />
                 Gating
+              </button>
+              <button
+                type="button"
+                onClick={onSelectCost}
+                className={cn(
+                  "flex w-full items-center justify-center gap-1 whitespace-nowrap rounded-md border px-2 py-1.5 text-xs font-medium transition-colors",
+                  activeView === "cost"
+                    ? "border-border bg-secondary text-foreground"
+                    : "border-transparent text-muted-foreground hover:bg-accent",
+                )}
+              >
+                <DollarSign className="size-3.5" />
+                Cost
               </button>
             </div>
           </div>

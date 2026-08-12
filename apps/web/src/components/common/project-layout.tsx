@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import {
   CalendarDays,
+  DollarSign,
   Radio,
   ShieldCheck,
   SquareKanban,
@@ -32,7 +33,7 @@ type ProjectLayoutProps = {
   headerActions?: ReactNode;
   children: ReactNode;
   showViewSwitcher?: boolean;
-  activeView?: "backlog" | "board" | "gantt" | "structures" | "gating";
+  activeView?: "backlog" | "board" | "gantt" | "structures" | "gating" | "cost";
 };
 
 export default function ProjectLayout({
@@ -61,7 +62,9 @@ export default function ProjectLayout({
           ? "structures"
           : location.pathname.includes("/gating")
             ? "gating"
-            : "board");
+            : location.pathname.includes("/cost")
+              ? "cost"
+              : "board");
 
   const handleNavigateToBacklog = () => {
     navigate({
@@ -98,6 +101,13 @@ export default function ProjectLayout({
     });
   };
 
+  const handleNavigateToCost = () => {
+    navigate({
+      to: "/dashboard/workspace/$workspaceId/project/$projectId/cost",
+      params: { workspaceId, projectId },
+    });
+  };
+
   const handleProjectSwitch = (nextProjectId: string) => {
     navigate({
       to:
@@ -109,7 +119,9 @@ export default function ProjectLayout({
               ? "/dashboard/workspace/$workspaceId/project/$projectId/structures"
               : resolvedView === "gating"
                 ? "/dashboard/workspace/$workspaceId/project/$projectId/gating"
-                : "/dashboard/workspace/$workspaceId/project/$projectId/board",
+                : resolvedView === "cost"
+                  ? "/dashboard/workspace/$workspaceId/project/$projectId/cost"
+                  : "/dashboard/workspace/$workspaceId/project/$projectId/board",
       params: {
         workspaceId,
         projectId: nextProjectId,
@@ -165,6 +177,7 @@ export default function ProjectLayout({
                 onSelectGantt={handleNavigateToGantt}
                 onSelectStructures={handleNavigateToStructures}
                 onSelectGating={handleNavigateToGating}
+                onSelectCost={handleNavigateToCost}
                 onSelectProject={handleProjectSwitch}
                 onAddProject={() => setIsCreateProjectModalOpen(true)}
               />
@@ -233,6 +246,18 @@ export default function ProjectLayout({
                 >
                   <ShieldCheck className="size-3.5" />
                   Gating
+                </Button>
+                <Button
+                  variant={resolvedView === "cost" ? "secondary" : "ghost"}
+                  size="xs"
+                  onClick={handleNavigateToCost}
+                  className={cn(
+                    "h-6 gap-1.5 rounded-md px-2 text-xs",
+                    resolvedView !== "cost" && "text-muted-foreground",
+                  )}
+                >
+                  <DollarSign className="size-3.5" />
+                  Cost
                 </Button>
               </div>
             )}
