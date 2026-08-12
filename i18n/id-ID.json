@@ -1416,20 +1416,23 @@
 	"tasks": {
 		"status": {
 			"label": "Status",
-			"to-do": "Perlu Dikerjakan",
+			"scheduled": "Scheduled",
+			"ready": "Ready to Build",
 			"in-progress": "Sedang Berjalan",
-			"in-review": "Dalam Review",
-			"done": "Selesai",
+			"awaiting-clearance": "Awaiting Clearance",
+			"awaiting-inspection": "Awaiting Inspection",
+			"complete": "Complete",
+			"energized": "Energized",
 			"archived": "Diarsipkan",
-			"planned": "Direncanakan"
+			"planned": "Backlog"
 		},
 		"priority": {
 			"label": "Prioritas",
 			"no-priority": "Tanpa prioritas",
-			"low": "Rendah",
-			"medium": "Sedang",
-			"high": "Tinggi",
-			"urgent": "Mendesak"
+			"routine": "Routine",
+			"expedited": "Expedited",
+			"urgent": "Mendesak",
+			"emergency": "Emergency"
 		},
 		"boardSearchPlaceholder": "Cari tiket...",
 		"view": {

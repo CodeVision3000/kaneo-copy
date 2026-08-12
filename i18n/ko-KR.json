@@ -1273,20 +1273,23 @@
 	"tasks": {
 		"status": {
 			"label": "상태",
-			"to-do": "할 일",
+			"scheduled": "Scheduled",
+			"ready": "Ready to Build",
 			"in-progress": "진행 중",
-			"in-review": "검토 중",
-			"done": "완료",
+			"awaiting-clearance": "Awaiting Clearance",
+			"awaiting-inspection": "Awaiting Inspection",
+			"complete": "Complete",
+			"energized": "Energized",
 			"archived": "보관됨",
-			"planned": "계획됨"
+			"planned": "Backlog"
 		},
 		"priority": {
 			"label": "우선순위",
 			"no-priority": "우선순위 없음",
-			"low": "낮음",
-			"medium": "보통",
-			"high": "높음",
-			"urgent": "긴급"
+			"routine": "Routine",
+			"expedited": "Expedited",
+			"urgent": "긴급",
+			"emergency": "Emergency"
 		},
 		"boardSearchPlaceholder": "티켓 검색...",
 		"view": {

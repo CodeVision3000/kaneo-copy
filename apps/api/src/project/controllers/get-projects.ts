@@ -17,8 +17,13 @@ async function getProjects(workspaceId: string, includeArchived = false) {
 
   const projectsWithStatistics = projects.map((project) => {
     const totalTasks = project.tasks.length;
+    // Construction-complete and energized both count as finished work for progress;
+    // "energized" alone would understate a project whose closeout trails the build.
     const completedTasks = project.tasks.filter(
-      (task) => task.status === "done" || task.status === "archived",
+      (task) =>
+        task.status === "complete" ||
+        task.status === "energized" ||
+        task.status === "archived",
     ).length;
     const completionPercentage =
       totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;

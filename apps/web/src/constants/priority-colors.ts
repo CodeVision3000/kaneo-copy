@@ -1,13 +1,13 @@
 export const priorityColorsFilter = {
-  low: "text-info-foreground",
-  medium: "text-warning-foreground/85",
-  high: "text-warning-foreground",
-  urgent: "text-destructive-foreground",
+  routine: "text-info-foreground",
+  expedited: "text-warning-foreground/85",
+  urgent: "text-warning-foreground",
+  emergency: "text-destructive-foreground",
 };
 
 export const priorityColorsTaskCard = {
-  low: "text-info-foreground",
-  medium: "text-warning-foreground/85",
-  high: "text-warning-foreground",
-  urgent: "text-destructive-foreground",
+  routine: "text-info-foreground",
+  expedited: "text-warning-foreground/85",
+  urgent: "text-warning-foreground",
+  emergency: "text-destructive-foreground",
 };

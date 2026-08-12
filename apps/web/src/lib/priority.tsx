@@ -8,19 +8,19 @@ import {
 
 export function getPriorityIcon(priority: string) {
   switch (priority) {
-    case "urgent":
+    case "emergency":
       return (
         <CircleAlert className="h-[12px] w-[12px] text-destructive-foreground" />
       );
-    case "high":
+    case "urgent":
       return (
         <ChevronsUp className="h-[12px] w-[12px] text-warning-foreground" />
       );
-    case "medium":
+    case "expedited":
       return (
         <ChevronUp className="h-[12px] w-[12px] text-warning-foreground/80" />
       );
-    case "low":
+    case "routine":
       return (
         <ChevronDown className="h-[12px] w-[12px] text-info-foreground/85" />
       );

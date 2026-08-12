@@ -8,6 +8,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ShortcutNumber } from "@/components/ui/shortcut-number";
+import { TASK_PRIORITIES } from "@/constants/priorities";
 import { useUpdateTaskPriority } from "@/hooks/mutations/task/use-update-task-status-priority";
 import { useNumberedShortcuts } from "@/hooks/use-numbered-shortcuts";
 import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
@@ -21,13 +22,7 @@ type TaskPriorityPopoverProps = {
   children: React.ReactNode;
 };
 
-const priorityOptions = [
-  { value: "no-priority" },
-  { value: "low" },
-  { value: "medium" },
-  { value: "high" },
-  { value: "urgent" },
-];
+const priorityOptions = TASK_PRIORITIES.map((value) => ({ value }));
 
 export default function TaskPriorityPopover({
   task,

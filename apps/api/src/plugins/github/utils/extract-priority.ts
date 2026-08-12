@@ -1,6 +1,11 @@
 type GitHubLabel = string | { name?: string };
 
-const VALID_PRIORITIES = ["low", "medium", "high", "urgent"] as const;
+const VALID_PRIORITIES = [
+  "routine",
+  "expedited",
+  "urgent",
+  "emergency",
+] as const;
 const STATUS_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export type ValidPriority = (typeof VALID_PRIORITIES)[number];

@@ -36,7 +36,7 @@ const task: Task = {
   title: "Directly loaded task",
   number: 1,
   description: null,
-  status: "to-do",
+  status: "scheduled",
   priority: null,
   startDate: null,
   dueDate: null,
@@ -54,8 +54,10 @@ describe("TaskStatusPopover", () => {
       data: [
         {
           id: "column-1",
-          slug: "to-do",
-          name: "Ready",
+          // A project-specific column, not one of DEFAULT_COLUMNS, so the name
+          // renders verbatim instead of going through the i18n status labels.
+          slug: "matting",
+          name: "Matting & Access",
           icon: null,
           isFinal: false,
         },
@@ -71,11 +73,13 @@ describe("TaskStatusPopover", () => {
     );
 
     expect(useGetColumns).toHaveBeenCalledWith("project-1");
-    expect(screen.queryByRole("button", { name: /Ready/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: /Matting/ })).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "Status" }));
 
-    expect(await screen.findByRole("button", { name: /Ready/ })).toBeVisible();
+    expect(
+      await screen.findByRole("button", { name: /Matting/ }),
+    ).toBeVisible();
   });
 
   it("shows loading feedback while status options are loading", async () => {

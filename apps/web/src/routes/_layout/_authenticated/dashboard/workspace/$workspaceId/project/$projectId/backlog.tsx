@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/menu";
 import labelColors from "@/constants/label-colors";
+import { TASK_PRIORITIES_BY_SEVERITY } from "@/constants/priorities";
 import { shortcuts } from "@/constants/shortcuts";
 import { useUpdateTask } from "@/hooks/mutations/task/use-update-task";
 import useGetLabelsByWorkspace from "@/hooks/queries/label/use-get-labels-by-workspace";
@@ -325,17 +326,17 @@ function RouteComponent() {
     for (const task of plannedTasks) {
       updateTask({
         ...task,
-        status: "to-do",
+        status: "scheduled",
       });
     }
 
     const updatedProject = produce(project, (draft) => {
-      const todoColumn = draft.columns?.find((col) => col.id === "to-do");
+      const todoColumn = draft.columns?.find((col) => col.id === "scheduled");
       if (todoColumn && draft.plannedTasks) {
         todoColumn.tasks.push(
           ...draft.plannedTasks.map((task) => ({
             ...task,
-            status: "to-do",
+            status: "scheduled",
           })),
         );
 
@@ -557,7 +558,7 @@ function RouteComponent() {
                         {t("tasks:priority.label")}
                       </DropdownMenuLabel>
                     </DropdownMenuGroup>
-                    {["urgent", "high", "medium", "low"].map((priority) => (
+                    {TASK_PRIORITIES_BY_SEVERITY.map((priority) => (
                       <DropdownMenuCheckboxItem
                         key={priority}
                         checked={filters.priority === priority}

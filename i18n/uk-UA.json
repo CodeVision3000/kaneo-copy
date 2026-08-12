@@ -1270,20 +1270,23 @@
 	"tasks": {
 		"status": {
 			"label": "Статус",
-			"to-do": "До виконання",
+			"scheduled": "Scheduled",
+			"ready": "Ready to Build",
 			"in-progress": "В роботі",
-			"in-review": "На перевірці",
-			"done": "Готово",
+			"awaiting-clearance": "Awaiting Clearance",
+			"awaiting-inspection": "Awaiting Inspection",
+			"complete": "Complete",
+			"energized": "Energized",
 			"archived": "Архівовано",
-			"planned": "Заплановано"
+			"planned": "Backlog"
 		},
 		"priority": {
 			"label": "Пріоритет",
 			"no-priority": "Без пріоритету",
-			"low": "Низький",
-			"medium": "Середній",
-			"high": "Високий",
-			"urgent": "Терміновий"
+			"routine": "Routine",
+			"expedited": "Expedited",
+			"urgent": "Терміновий",
+			"emergency": "Emergency"
 		},
 		"boardSearchPlaceholder": "Пошук тікетів...",
 		"view": {

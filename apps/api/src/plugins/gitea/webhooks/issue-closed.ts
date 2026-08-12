@@ -103,7 +103,7 @@ export async function handleGiteaIssueClosed(
     const targetStatus = await resolveTargetStatus(
       task.projectId,
       "issue_closed",
-      "done",
+      "complete",
     );
 
     const statusResult = await updateTaskStatus(task.id, targetStatus);

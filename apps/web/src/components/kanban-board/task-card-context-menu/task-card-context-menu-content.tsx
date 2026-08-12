@@ -12,6 +12,7 @@ import {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
 } from "@/components/ui/context-menu";
+import { TASK_PRIORITIES_BY_SEVERITY } from "@/constants/priorities";
 import { useUpdateTask } from "@/hooks/mutations/task/use-update-task";
 import { useUpdateTaskAssignee } from "@/hooks/mutations/task/use-update-task-assignee";
 import { useUpdateTaskDescription } from "@/hooks/mutations/task/use-update-task-description";
@@ -155,7 +156,7 @@ export default function TaskCardContextMenuContent({
               {getPriorityIcon("no-priority")}
               <span>{getPriorityLabel("no-priority")}</span>
             </ContextMenuCheckboxItem>
-            {["low", "medium", "high", "urgent"].map((priority) => (
+            {[...TASK_PRIORITIES_BY_SEVERITY].reverse().map((priority) => (
               <ContextMenuCheckboxItem
                 key={priority}
                 checked={task.priority === priority}

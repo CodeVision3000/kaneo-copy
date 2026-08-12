@@ -243,7 +243,7 @@ async function importSingleIssue(
     userId: null,
     title: issue.title,
     description: formatTaskDescriptionFromIssue(issue.body),
-    status: status || "to-do",
+    status: status || "scheduled",
     priority: priority || null,
     number: nextTaskNumber,
   };

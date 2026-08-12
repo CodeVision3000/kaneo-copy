@@ -40,6 +40,7 @@ import invitation from "./invitation";
 import label from "./label";
 import mcpRoutes, { mcpWellKnownRoutes } from "./mcp";
 import { migrateColumns } from "./migrations/column-migration";
+import { migrateUtilityVocabulary } from "./migrations/utility-vocabulary-migration";
 import notification from "./notification";
 import notificationPreferences from "./notification-preferences";
 import oauth from "./oauth";
@@ -784,6 +785,9 @@ export async function runStartupTasks() {
 
   await migrateNotificationPreferencesSchema();
   await migrateGitHubIntegration();
+  // Must precede migrateColumns(): that seeds/links columns by slug, so legacy slugs
+  // have to be renamed to the utility workflow first.
+  await migrateUtilityVocabulary();
   await migrateColumns();
   await seedDefaultWorkspaceRoles();
 

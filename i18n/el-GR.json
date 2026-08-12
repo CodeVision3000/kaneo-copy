@@ -1271,20 +1271,23 @@
 	"tasks": {
 		"status": {
 			"label": "Κατάσταση",
-			"to-do": "Προς υλοποίηση",
+			"scheduled": "Scheduled",
+			"ready": "Ready to Build",
 			"in-progress": "Σε εξέλιξη",
-			"in-review": "Σε έλεγχο",
-			"done": "Ολοκληρώθηκε",
+			"awaiting-clearance": "Awaiting Clearance",
+			"awaiting-inspection": "Awaiting Inspection",
+			"complete": "Complete",
+			"energized": "Energized",
 			"archived": "Αρχειοθετημένο",
-			"planned": "Προγραμματισμένο"
+			"planned": "Backlog"
 		},
 		"priority": {
 			"label": "Προτεραιότητα",
 			"no-priority": "Χωρίς προτεραιότητα",
-			"low": "Χαμηλή",
-			"medium": "Μεσαία",
-			"high": "Υψηλή",
-			"urgent": "Επείγουσα"
+			"routine": "Routine",
+			"expedited": "Expedited",
+			"urgent": "Επείγουσα",
+			"emergency": "Emergency"
 		},
 		"boardSearchPlaceholder": "Αναζήτηση αιτημάτων...",
 		"view": {

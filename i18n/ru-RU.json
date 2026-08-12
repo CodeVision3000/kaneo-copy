@@ -1276,20 +1276,23 @@
 	"tasks": {
 		"status": {
 			"label": "Статус",
-			"to-do": "К выполнению",
+			"scheduled": "Scheduled",
+			"ready": "Ready to Build",
 			"in-progress": "В работе",
-			"in-review": "На проверке",
-			"done": "Готово",
+			"awaiting-clearance": "Awaiting Clearance",
+			"awaiting-inspection": "Awaiting Inspection",
+			"complete": "Complete",
+			"energized": "Energized",
 			"archived": "В архиве",
-			"planned": "Запланировано"
+			"planned": "Backlog"
 		},
 		"priority": {
 			"label": "Приоритет",
 			"no-priority": "Без приоритета",
-			"low": "Низкий",
-			"medium": "Средний",
-			"high": "Высокий",
-			"urgent": "Срочный"
+			"routine": "Routine",
+			"expedited": "Expedited",
+			"urgent": "Срочный",
+			"emergency": "Emergency"
 		},
 		"boardSearchPlaceholder": "Поиск задач...",
 		"view": {

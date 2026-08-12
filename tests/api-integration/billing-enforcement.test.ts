@@ -25,8 +25,8 @@ function createTask(
     body: JSON.stringify({
       title: "Billing gate task",
       description: "",
-      priority: "low",
-      status: "to-do",
+      priority: "routine",
+      status: "scheduled",
     }),
   });
 }

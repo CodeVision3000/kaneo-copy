@@ -27,11 +27,13 @@ describe("github format helpers", () => {
   });
 
   it("builds labels while skipping no-priority", () => {
-    expect(getLabelsForIssue("high", "in-review")).toEqual([
-      "priority:high",
-      "status:in-review",
+    expect(getLabelsForIssue("urgent", "awaiting-inspection")).toEqual([
+      "priority:urgent",
+      "status:awaiting-inspection",
     ]);
-    expect(getLabelsForIssue("no-priority", "done")).toEqual(["status:done"]);
+    expect(getLabelsForIssue("no-priority", "complete")).toEqual([
+      "status:complete",
+    ]);
     expect(getLabelsForIssue(null, "planned")).toEqual(["status:planned"]);
   });
 });

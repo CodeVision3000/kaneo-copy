@@ -1271,20 +1271,23 @@
 	"tasks": {
 		"status": {
 			"label": "Статус",
-			"to-do": "За правење",
+			"scheduled": "Scheduled",
+			"ready": "Ready to Build",
 			"in-progress": "Во тек",
-			"in-review": "На преглед",
-			"done": "Завршено",
+			"awaiting-clearance": "Awaiting Clearance",
+			"awaiting-inspection": "Awaiting Inspection",
+			"complete": "Complete",
+			"energized": "Energized",
 			"archived": "Архивирано",
-			"planned": "Планирано"
+			"planned": "Backlog"
 		},
 		"priority": {
 			"label": "Приоритет",
 			"no-priority": "Без приоритет",
-			"low": "Низок",
-			"medium": "Среден",
-			"high": "Висок",
-			"urgent": "Итен"
+			"routine": "Routine",
+			"expedited": "Expedited",
+			"urgent": "Итен",
+			"emergency": "Emergency"
 		},
 		"boardSearchPlaceholder": "Пребарај тикети...",
 		"view": {

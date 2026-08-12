@@ -13,7 +13,7 @@ import {
 type CreateTaskBody = {
   title: string;
   description: string;
-  priority: "low" | "medium" | "high";
+  priority: "routine" | "expedited" | "urgent";
   status: string;
 };
 
@@ -24,8 +24,8 @@ async function seedTask(projectId: string, columnId: string | null) {
       projectId,
       title: "Seeded task",
       description: "Existing",
-      priority: "medium",
-      status: "to-do",
+      priority: "expedited",
+      status: "scheduled",
       columnId,
       number: 1,
       position: 1,
@@ -58,8 +58,8 @@ async function postCreateTask(
     body: JSON.stringify({
       title: "RBAC probe",
       description: "",
-      priority: "low",
-      status: "to-do",
+      priority: "routine",
+      status: "scheduled",
       ...body,
     }),
   });
@@ -111,7 +111,7 @@ describe("API integration: workspace RBAC enforcement", () => {
       const { project, columns } = await createProjectFixture({
         workspaceId: member.workspace.id,
       });
-      const task = await seedTask(project.id, columns.todo.id);
+      const task = await seedTask(project.id, columns.scheduled.id);
 
       mockAuthenticatedSession(member.user);
       const { app } = createApp();
@@ -132,7 +132,7 @@ describe("API integration: workspace RBAC enforcement", () => {
       const { project, columns } = await createProjectFixture({
         workspaceId: member.workspace.id,
       });
-      const task = await seedTask(project.id, columns.todo.id);
+      const task = await seedTask(project.id, columns.scheduled.id);
 
       mockAuthenticatedSession(member.user);
       const { app } = createApp();
@@ -153,7 +153,7 @@ describe("API integration: workspace RBAC enforcement", () => {
       const { project, columns } = await createProjectFixture({
         workspaceId: member.workspace.id,
       });
-      const task = await seedTask(project.id, columns.todo.id);
+      const task = await seedTask(project.id, columns.scheduled.id);
 
       mockAuthenticatedSession(member.user);
       const { app } = createApp();
@@ -207,8 +207,8 @@ describe("API integration: workspace RBAC enforcement", () => {
           body: JSON.stringify({
             title: "Cross-workspace probe",
             description: "",
-            priority: "low",
-            status: "to-do",
+            priority: "routine",
+            status: "scheduled",
           }),
         },
       );
@@ -333,7 +333,7 @@ describe("API integration: workspace RBAC enforcement", () => {
       const { project, columns } = await createProjectFixture({
         workspaceId: member.workspace.id,
       });
-      const task = await seedTask(project.id, columns.todo.id);
+      const task = await seedTask(project.id, columns.scheduled.id);
 
       mockAuthenticatedSession(member.user);
       const { app } = createApp();
@@ -344,8 +344,8 @@ describe("API integration: workspace RBAC enforcement", () => {
         body: JSON.stringify({
           title: "Updated by member",
           description: "edit",
-          priority: "high",
-          status: "to-do",
+          priority: "urgent",
+          status: "scheduled",
           projectId: project.id,
           position: 1,
         }),
@@ -358,7 +358,7 @@ describe("API integration: workspace RBAC enforcement", () => {
       const { project, columns } = await createProjectFixture({
         workspaceId: member.workspace.id,
       });
-      const task = await seedTask(project.id, columns.todo.id);
+      const task = await seedTask(project.id, columns.scheduled.id);
 
       mockAuthenticatedSession(member.user);
       const { app } = createApp();
@@ -369,8 +369,8 @@ describe("API integration: workspace RBAC enforcement", () => {
         body: JSON.stringify({
           title: "Viewer attempt",
           description: "nope",
-          priority: "low",
-          status: "to-do",
+          priority: "routine",
+          status: "scheduled",
           projectId: project.id,
           position: 1,
         }),
@@ -385,7 +385,7 @@ describe("API integration: workspace RBAC enforcement", () => {
       const { project, columns } = await createProjectFixture({
         workspaceId: member.workspace.id,
       });
-      const task = await seedTask(project.id, columns.todo.id);
+      const task = await seedTask(project.id, columns.scheduled.id);
 
       mockAuthenticatedSession(member.user);
       const { app } = createApp();
@@ -403,7 +403,7 @@ describe("API integration: workspace RBAC enforcement", () => {
       const { project, columns } = await createProjectFixture({
         workspaceId: member.workspace.id,
       });
-      const task = await seedTask(project.id, columns.todo.id);
+      const task = await seedTask(project.id, columns.scheduled.id);
 
       mockAuthenticatedSession(member.user);
       const { app } = createApp();
@@ -567,7 +567,7 @@ describe("API integration: workspace RBAC enforcement", () => {
       const { project, columns } = await createProjectFixture({
         workspaceId: member.workspace.id,
       });
-      const task = await seedTask(project.id, columns.todo.id);
+      const task = await seedTask(project.id, columns.scheduled.id);
       // deleteLabel requires the label to be attached to a task; without a
       // taskId the controller rejects with 400 before checking permissions.
       const [label] = await db
@@ -594,7 +594,7 @@ describe("API integration: workspace RBAC enforcement", () => {
       const { project, columns } = await createProjectFixture({
         workspaceId: member.workspace.id,
       });
-      const task = await seedTask(project.id, columns.todo.id);
+      const task = await seedTask(project.id, columns.scheduled.id);
       const [label] = await db
         .insert(schema.labelTable)
         .values({

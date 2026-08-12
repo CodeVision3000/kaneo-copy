@@ -1313,20 +1313,23 @@
 	"tasks": {
 		"status": {
 			"label": "Status",
-			"to-do": "Zu erledigen",
+			"scheduled": "Scheduled",
+			"ready": "Ready to Build",
 			"in-progress": "In Bearbeitung",
-			"in-review": "In Prüfung",
-			"done": "Erledigt",
+			"awaiting-clearance": "Awaiting Clearance",
+			"awaiting-inspection": "Awaiting Inspection",
+			"complete": "Complete",
+			"energized": "Energized",
 			"archived": "Archiviert",
-			"planned": "Geplant"
+			"planned": "Backlog"
 		},
 		"priority": {
 			"label": "Priorität",
 			"no-priority": "Keine Priorität",
-			"low": "Niedrig",
-			"medium": "Mittel",
-			"high": "Hoch",
-			"urgent": "Dringend"
+			"routine": "Routine",
+			"expedited": "Expedited",
+			"urgent": "Dringend",
+			"emergency": "Emergency"
 		},
 		"boardSearchPlaceholder": "Tickets suchen...",
 		"view": {

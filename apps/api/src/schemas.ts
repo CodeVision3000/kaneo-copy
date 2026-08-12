@@ -19,6 +19,15 @@ export const projectSchema = v.object({
   createdAt: v.date(),
   isPublic: v.nullable(v.boolean()),
   archivedAt: v.nullable(v.date()),
+  discipline: v.nullable(v.string()),
+  utilityClient: v.nullable(v.string()),
+  contractNumber: v.nullable(v.string()),
+  workOrderNumber: v.nullable(v.string()),
+  contractType: v.nullable(v.string()),
+  voltageKv: v.nullable(v.string()),
+  mobilizationDate: v.nullable(v.date()),
+  energizationTargetDate: v.nullable(v.date()),
+  substantialCompletionDate: v.nullable(v.date()),
 });
 
 export const taskSchema = v.object({
@@ -32,10 +41,10 @@ export const taskSchema = v.object({
   status: v.string(),
   priority: v.picklist([
     "no-priority",
-    "low",
-    "medium",
-    "high",
+    "routine",
+    "expedited",
     "urgent",
+    "emergency",
   ] as const),
   startDate: v.optional(v.date()),
   dueDate: v.optional(v.date()),

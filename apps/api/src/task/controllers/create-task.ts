@@ -27,7 +27,7 @@ async function createTask({
   description?: string;
   priority?: string;
 }) {
-  const resolvedStatus = status || "to-do";
+  const resolvedStatus = status || "scheduled";
   const resolvedPriority = priority || "no-priority";
 
   await assertValidTaskStatus(resolvedStatus, projectId);

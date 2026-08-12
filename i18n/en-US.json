@@ -1477,20 +1477,23 @@
 	"tasks": {
 		"status": {
 			"label": "Status",
-			"to-do": "To Do",
+			"scheduled": "Scheduled",
+			"ready": "Ready to Build",
 			"in-progress": "In Progress",
-			"in-review": "In Review",
-			"done": "Done",
+			"awaiting-clearance": "Awaiting Clearance",
+			"awaiting-inspection": "Awaiting Inspection",
+			"complete": "Complete",
+			"energized": "Energized",
 			"archived": "Archived",
-			"planned": "Planned"
+			"planned": "Backlog"
 		},
 		"priority": {
 			"label": "Priority",
 			"no-priority": "No priority",
-			"low": "Low",
-			"medium": "Medium",
-			"high": "High",
-			"urgent": "Urgent"
+			"routine": "Routine",
+			"expedited": "Expedited",
+			"urgent": "Urgent",
+			"emergency": "Emergency"
 		},
 		"boardSearchPlaceholder": "Search tickets...",
 		"view": {

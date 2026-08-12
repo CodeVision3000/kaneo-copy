@@ -9,10 +9,13 @@ import {
 import projectIcons from "./project-icons";
 
 export const DEFAULT_COLUMN_ICON_NAMES = {
-  "to-do": "Circle",
+  scheduled: "Calendar",
+  ready: "Circle",
   "in-progress": "CircleDot",
-  "in-review": "Search",
-  done: "CheckCircle2",
+  "awaiting-clearance": "Shield",
+  "awaiting-inspection": "Search",
+  complete: "CheckCircle2",
+  energized: "Zap",
   archived: "Archive",
   planned: "CircleDashed",
 } as const;

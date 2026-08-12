@@ -71,12 +71,12 @@ export default function TaskSubtasks({
   // Map the completion checkbox to the project's actual column slugs (the API
   // validates status against columns). A subtask counts as completed when its
   // status is a final column.
-  const doneSlug = columns.find((c) => c.isFinal)?.slug ?? "done";
-  const todoSlug = columns.find((c) => !c.isFinal)?.slug ?? "to-do";
+  const doneSlug = columns.find((c) => c.isFinal)?.slug ?? "energized";
+  const todoSlug = columns.find((c) => !c.isFinal)?.slug ?? "scheduled";
   const isCompleted = (status: string) =>
     columns.length > 0
       ? (columns.find((c) => c.slug === status)?.isFinal ?? false)
-      : status === "done";
+      : status === "energized";
 
   const subtasks = relations
     .filter(
@@ -260,7 +260,7 @@ export default function TaskSubtasks({
         title: newTitle.trim(),
         description: "",
         projectId,
-        status: "to-do",
+        status: todoSlug,
         priority: "no-priority",
       });
 

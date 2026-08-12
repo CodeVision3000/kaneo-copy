@@ -121,7 +121,7 @@ export async function handleGiteaPullRequestOpened(
     const targetStatus = await resolveTargetStatus(
       integration.projectId,
       "pr_opened",
-      config.statusTransitions?.onPROpen || "in-review",
+      config.statusTransitions?.onPROpen || "awaiting-inspection",
     );
 
     const isTaskFinal = await isTaskInFinalState(task);

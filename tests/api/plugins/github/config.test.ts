@@ -20,8 +20,8 @@ describe("github config", () => {
       commentTaskLinkOnGitHubIssue: true,
       statusTransitions: {
         onBranchPush: "in-progress",
-        onPROpen: "in-review",
-        onPRMerge: "done",
+        onPROpen: "awaiting-inspection",
+        onPRMerge: "complete",
       },
     });
   });

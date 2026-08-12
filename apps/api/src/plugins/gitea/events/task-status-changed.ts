@@ -39,7 +39,7 @@ export async function handleTaskStatusChanged(
       `status:${event.newStatus}`,
     ]);
 
-    if (event.newStatus === "done") {
+    if (event.newStatus === "complete") {
       await client.updateIssue(repositoryOwner, repositoryName, issueNumber, {
         state: "closed",
       });
@@ -51,7 +51,10 @@ export async function handleTaskStatusChanged(
           lastOutboundStateSyncAt: Date.now(),
         },
       });
-    } else if (event.oldStatus === "done" && event.newStatus !== "done") {
+    } else if (
+      event.oldStatus === "complete" &&
+      event.newStatus !== "complete"
+    ) {
       await client.updateIssue(repositoryOwner, repositoryName, issueNumber, {
         state: "open",
       });

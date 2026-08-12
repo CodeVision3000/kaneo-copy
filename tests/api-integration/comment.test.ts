@@ -24,9 +24,9 @@ describe("API integration: task comments", () => {
       .values({
         projectId: project.id,
         title: "Shared comments",
-        status: "to-do",
-        columnId: columns.todo.id,
-        priority: "medium",
+        status: "scheduled",
+        columnId: columns.scheduled.id,
+        priority: "expedited",
         number: 1,
         position: 1,
       })

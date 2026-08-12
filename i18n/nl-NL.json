@@ -1057,20 +1057,23 @@
 	"tasks": {
 		"status": {
 			"label": "Status",
-			"to-do": "Te doen",
+			"scheduled": "Scheduled",
+			"ready": "Ready to Build",
 			"in-progress": "In behandeling",
-			"in-review": "Ter beoordeling",
-			"done": "Gereed",
+			"awaiting-clearance": "Awaiting Clearance",
+			"awaiting-inspection": "Awaiting Inspection",
+			"complete": "Complete",
+			"energized": "Energized",
 			"archived": "Gearchiveerd",
-			"planned": "Gepland"
+			"planned": "Backlog"
 		},
 		"priority": {
 			"label": "Prioriteit",
 			"no-priority": "Geen prioriteit",
-			"low": "Laag",
-			"medium": "Gemiddeld",
-			"high": "Hoog",
-			"urgent": "Urgent"
+			"routine": "Routine",
+			"expedited": "Expedited",
+			"urgent": "Urgent",
+			"emergency": "Emergency"
 		},
 		"boardSearchPlaceholder": "Tickets zoeken...",
 		"view": {

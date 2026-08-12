@@ -3,12 +3,14 @@ import { HTTPException } from "hono/http-exception";
 import db from "../database";
 import { columnTable } from "../database/schema";
 
+// Utility work-order priority ladder, ordered least to most severe. "emergency" is
+// storm/outage restoration work that displaces everything else.
 export const VALID_PRIORITIES = [
   "no-priority",
-  "low",
-  "medium",
-  "high",
+  "routine",
+  "expedited",
   "urgent",
+  "emergency",
 ] as const;
 
 export const VIRTUAL_STATUSES = ["planned", "archived"] as const;

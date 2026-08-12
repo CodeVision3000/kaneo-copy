@@ -90,22 +90,36 @@ export async function createProjectFixture({
     insertedColumns.map((column) => [column.slug, column]),
   );
 
-  const todo = columnsBySlug.get("to-do");
+  const scheduled = columnsBySlug.get("scheduled");
+  const ready = columnsBySlug.get("ready");
   const inProgress = columnsBySlug.get("in-progress");
-  const inReview = columnsBySlug.get("in-review");
-  const done = columnsBySlug.get("done");
+  const awaitingClearance = columnsBySlug.get("awaiting-clearance");
+  const awaitingInspection = columnsBySlug.get("awaiting-inspection");
+  const complete = columnsBySlug.get("complete");
+  const energized = columnsBySlug.get("energized");
 
-  if (!todo || !inProgress || !inReview || !done) {
+  if (
+    !scheduled ||
+    !ready ||
+    !inProgress ||
+    !awaitingClearance ||
+    !awaitingInspection ||
+    !complete ||
+    !energized
+  ) {
     throw new Error("Failed to seed default project columns");
   }
 
   return {
     project,
     columns: {
-      todo,
+      scheduled,
+      ready,
       inProgress,
-      inReview,
-      done,
+      awaitingClearance,
+      awaitingInspection,
+      complete,
+      energized,
     },
   };
 }

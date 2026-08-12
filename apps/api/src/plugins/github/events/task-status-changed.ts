@@ -58,7 +58,7 @@ export async function handleTaskStatusChanged(
       [`status:${event.newStatus}`],
     );
 
-    if (event.newStatus === "done") {
+    if (event.newStatus === "complete") {
       await octokit.rest.issues.update({
         owner: repositoryOwner,
         repo: repositoryName,
@@ -72,7 +72,10 @@ export async function handleTaskStatusChanged(
           state: "closed",
         },
       });
-    } else if (event.oldStatus === "done" && event.newStatus !== "done") {
+    } else if (
+      event.oldStatus === "complete" &&
+      event.newStatus !== "complete"
+    ) {
       await octokit.rest.issues.update({
         owner: repositoryOwner,
         repo: repositoryName,

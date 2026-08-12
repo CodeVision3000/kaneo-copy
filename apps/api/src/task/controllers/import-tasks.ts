@@ -50,7 +50,7 @@ async function importTasks(
         validStatuses,
       );
       const { priority, warning: priorityWarning } = coercePriority(
-        taskData.priority || "low",
+        taskData.priority || "routine",
       );
       const warnings = [statusWarning, priorityWarning].filter(Boolean);
 

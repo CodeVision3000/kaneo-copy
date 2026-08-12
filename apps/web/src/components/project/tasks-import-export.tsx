@@ -192,8 +192,8 @@ export function TasksImportExport({ project }: TasksImportExportProps) {
     {
       "title": "Task title",
       "description": "Description text",
-      "status": "to-do",
-      "priority": "low",
+      "status": "scheduled",
+      "priority": "routine",
       "startDate": "2025-04-18T00:00:00.000Z",
       "dueDate": "2025-04-20T00:00:00.000Z",
       "userId": "user@example.com"

@@ -12,6 +12,30 @@ import getProjectCtrl from "./controllers/get-project";
 import getProjectsCtrl from "./controllers/get-projects";
 import unarchiveProjectCtrl from "./controllers/unarchive-project";
 import updateProjectCtrl from "./controllers/update-project";
+import { CONTRACT_TYPES, PROJECT_DISCIPLINES } from "./disciplines";
+
+/** Utility attributes accepted on both create and update. All optional. */
+const utilityProjectFields = {
+  discipline: v.optional(v.nullable(v.picklist(PROJECT_DISCIPLINES))),
+  utilityClient: v.optional(v.nullable(v.string())),
+  contractNumber: v.optional(v.nullable(v.string())),
+  workOrderNumber: v.optional(v.nullable(v.string())),
+  contractType: v.optional(v.nullable(v.picklist(CONTRACT_TYPES))),
+  voltageKv: v.optional(v.nullable(v.string())),
+};
+
+/**
+ * Dates arrive as ISO strings. Absent keys are dropped so a partial update leaves the
+ * stored value alone, while an explicit null clears it.
+ */
+function toOptionalDates(input: Record<string, string | null | undefined>) {
+  const dates: Record<string, Date | null> = {};
+  for (const [key, value] of Object.entries(input)) {
+    if (value === undefined) continue;
+    dates[key] = value === null ? null : new Date(value);
+  }
+  return dates;
+}
 
 const project = new Hono<{
   Variables: {
@@ -74,15 +98,22 @@ const project = new Hono<{
         workspaceId: v.string(),
         icon: v.string(),
         slug: v.string(),
+        ...utilityProjectFields,
       }),
     ),
     workspaceAccess.fromBody(),
     requireWorkspacePermission({ project: ["create"] }),
     requireEntitlement,
     async (c) => {
-      const { name, icon, slug } = c.req.valid("json");
+      const { name, icon, slug, ...utility } = c.req.valid("json");
       const workspaceId = c.get("workspaceId");
-      const newProject = await createProjectCtrl(workspaceId, name, icon, slug);
+      const newProject = await createProjectCtrl({
+        workspaceId,
+        name,
+        icon,
+        slug,
+        ...utility,
+      });
       return c.json(newProject);
     },
   )
@@ -134,23 +165,43 @@ const project = new Hono<{
         slug: v.string(),
         description: v.string(),
         isPublic: v.boolean(),
+        ...utilityProjectFields,
+        mobilizationDate: v.optional(v.nullable(v.string())),
+        energizationTargetDate: v.optional(v.nullable(v.string())),
+        substantialCompletionDate: v.optional(v.nullable(v.string())),
       }),
     ),
     workspaceAccess.fromProject(),
     requireWorkspacePermission({ project: ["update"] }),
     async (c) => {
       const { id } = c.req.valid("param");
-      const { name, icon, slug, description, isPublic } = c.req.valid("json");
-      const workspaceId = c.get("workspaceId");
-      const updatedProject = await updateProjectCtrl(
-        id,
+      const {
         name,
         icon,
         slug,
         description,
         isPublic,
+        mobilizationDate,
+        energizationTargetDate,
+        substantialCompletionDate,
+        ...utility
+      } = c.req.valid("json");
+      const workspaceId = c.get("workspaceId");
+      const updatedProject = await updateProjectCtrl({
+        id,
         workspaceId,
-      );
+        name,
+        icon,
+        slug,
+        description,
+        isPublic,
+        ...utility,
+        ...toOptionalDates({
+          mobilizationDate,
+          energizationTargetDate,
+          substantialCompletionDate,
+        }),
+      });
       return c.json(updatedProject);
     },
   )

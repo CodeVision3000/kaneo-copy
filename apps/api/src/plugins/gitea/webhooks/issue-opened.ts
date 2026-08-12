@@ -93,7 +93,7 @@ export async function handleGiteaIssueOpened(
     const resolvedStatus = await resolveTargetStatus(
       projectId,
       "issue_opened",
-      status || "to-do",
+      status || "scheduled",
     );
 
     const targetColumn = await db.query.columnTable.findFirst({

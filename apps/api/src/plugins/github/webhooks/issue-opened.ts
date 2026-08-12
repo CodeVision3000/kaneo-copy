@@ -81,7 +81,7 @@ export async function handleIssueOpened(payload: IssueOpenedPayload) {
     const resolvedStatus = await resolveTargetStatus(
       projectId,
       "issue_opened",
-      status || "to-do",
+      status || "scheduled",
     );
 
     const targetStatus = resolvedStatus;

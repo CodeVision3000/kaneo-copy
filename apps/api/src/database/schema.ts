@@ -290,9 +290,25 @@ export const projectTable = pgTable(
     isPublic: boolean("is_public").default(false),
     archivedAt: timestamp("archived_at", { mode: "date" }),
     lastTaskNumber: integer("last_task_number").notNull().default(0),
+    // Utility project attributes. "discipline" drives which work-breakdown vocabulary
+    // the project uses (structures and spans vs. work orders vs. bays and equipment).
+    discipline: text("discipline"),
+    utilityClient: text("utility_client"),
+    contractNumber: text("contract_number"),
+    workOrderNumber: text("work_order_number"),
+    contractType: text("contract_type"),
+    voltageKv: text("voltage_kv"),
+    mobilizationDate: timestamp("mobilization_date", { mode: "date" }),
+    energizationTargetDate: timestamp("energization_target_date", {
+      mode: "date",
+    }),
+    substantialCompletionDate: timestamp("substantial_completion_date", {
+      mode: "date",
+    }),
   },
   (table) => [
     unique("project_workspace_id_id_unique").on(table.workspaceId, table.id),
+    index("project_discipline_idx").on(table.discipline),
   ],
 );
 
@@ -375,12 +391,12 @@ export const taskTable = pgTable(
     }),
     title: text("title").notNull(),
     description: text("description"),
-    status: text("status").notNull().default("to-do"),
+    status: text("status").notNull().default("scheduled"),
     columnId: text("column_id").references(() => columnTable.id, {
       onDelete: "set null",
       onUpdate: "cascade",
     }),
-    priority: text("priority").default("low"),
+    priority: text("priority").default("routine"),
     startDate: timestamp("start_date", { mode: "date" }),
     dueDate: timestamp("due_date", { mode: "date" }),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),

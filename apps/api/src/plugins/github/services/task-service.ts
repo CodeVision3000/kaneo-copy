@@ -105,7 +105,7 @@ export async function isTaskInFinalState(task: {
     return columnByStatus.isFinal;
   }
 
-  return task.status === "done";
+  return task.status === "energized";
 }
 
 export async function getIntegrationWithProject(integrationId: string) {

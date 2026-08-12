@@ -1278,20 +1278,23 @@
 	"tasks": {
 		"status": {
 			"label": "Durum",
-			"to-do": "Yapılacak",
+			"scheduled": "Scheduled",
+			"ready": "Ready to Build",
 			"in-progress": "Devam Ediyor",
-			"in-review": "İncelemede",
-			"done": "Tamamlandı",
+			"awaiting-clearance": "Awaiting Clearance",
+			"awaiting-inspection": "Awaiting Inspection",
+			"complete": "Complete",
+			"energized": "Energized",
 			"archived": "Arşivlendi",
-			"planned": "Planlandı"
+			"planned": "Backlog"
 		},
 		"priority": {
 			"label": "Öncelik",
 			"no-priority": "Öncelik yok",
-			"low": "Düşük",
-			"medium": "Orta",
-			"high": "Yüksek",
-			"urgent": "Acil"
+			"routine": "Routine",
+			"expedited": "Expedited",
+			"urgent": "Acil",
+			"emergency": "Emergency"
 		},
 		"boardSearchPlaceholder": "Talep ara...",
 		"view": {

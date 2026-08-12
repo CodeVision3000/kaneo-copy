@@ -35,10 +35,13 @@ export const Route = createFileRoute(
 });
 
 const skeletonColumns = [
-  { key: "col-todo", cards: 3 },
-  { key: "col-progress", cards: 4 },
-  { key: "col-review", cards: 2 },
-  { key: "col-done", cards: 1 },
+  { key: "col-scheduled", cards: 3 },
+  { key: "col-ready", cards: 2 },
+  { key: "col-in-progress", cards: 4 },
+  { key: "col-awaiting-clearance", cards: 2 },
+  { key: "col-awaiting-inspection", cards: 1 },
+  { key: "col-complete", cards: 2 },
+  { key: "col-energized", cards: 1 },
 ];
 
 function BoardSkeleton() {

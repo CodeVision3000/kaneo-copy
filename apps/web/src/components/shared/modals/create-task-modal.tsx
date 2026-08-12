@@ -36,6 +36,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { TASK_PRIORITIES, type TaskPriority } from "@/constants/priorities";
 import useCreateLabel from "@/hooks/mutations/label/use-create-label";
 import useCreateTask from "@/hooks/mutations/task/use-create-task";
 import { useDeleteTask } from "@/hooks/mutations/task/use-delete-task";
@@ -59,7 +60,7 @@ type CreateTaskModalProps = {
   projectId?: string;
 };
 
-type Priority = "no-priority" | "low" | "medium" | "high" | "urgent";
+type Priority = TaskPriority;
 
 type LabelColor =
   | "gray"
@@ -373,7 +374,7 @@ function CreateTaskModal({
     if (!title.trim() || !resolvedProjectId || !workspace?.id) return;
 
     try {
-      const taskStatus = status ?? "to-do";
+      const taskStatus = status ?? "scheduled";
       didSubmitRef.current = true;
 
       const savedTask = draftTask
@@ -454,12 +455,10 @@ function CreateTaskModal({
 
   const priorityOptions = useMemo(
     () =>
-      (["no-priority", "low", "medium", "high", "urgent"] as const).map(
-        (value) => ({
-          value,
-          label: t(`tasks:priority.${value}`),
-        }),
-      ),
+      TASK_PRIORITIES.map((value) => ({
+        value,
+        label: t(`tasks:priority.${value}`),
+      })),
     [t],
   );
 

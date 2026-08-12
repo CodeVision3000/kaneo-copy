@@ -104,7 +104,7 @@ export async function handleGiteaIssueReopened(
       const targetStatus = await resolveTargetStatus(
         task.projectId,
         "issue_reopened",
-        "to-do",
+        "scheduled",
       );
 
       const statusResult = await updateTaskStatus(task.id, targetStatus);

@@ -90,7 +90,7 @@ export async function handlePullRequestClosed(payload: PRClosedPayload) {
         const targetStatus = await resolveTargetStatus(
           integration.projectId,
           "pr_merged",
-          config.statusTransitions?.onPRMerge || "done",
+          config.statusTransitions?.onPRMerge || "complete",
         );
         const statusResult = await updateTaskStatus(task.id, targetStatus);
         if (

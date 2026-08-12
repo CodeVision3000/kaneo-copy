@@ -443,7 +443,7 @@ function ListView({ project, disableDragDrop = false }: ListViewProps) {
         open={isTaskModalOpen}
         projectId={project.id}
         onClose={() => setIsTaskModalOpen(false)}
-        status={activeColumn ?? "done"}
+        status={activeColumn ?? "energized"}
       />
       <ArchiveTasksModal
         open={isArchiveModalOpen}

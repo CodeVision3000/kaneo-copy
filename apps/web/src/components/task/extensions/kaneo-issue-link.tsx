@@ -65,7 +65,7 @@ function KaneoIssueLinkView({ node }: NodeViewProps) {
   const title = task?.title || issueKey || t("tasks:entity.task");
   const status = task?.status
     ? t(`tasks:status.${task.status}`)
-    : t("tasks:status.to-do");
+    : t("tasks:status.scheduled");
   const priority = task?.priority
     ? t(`tasks:priority.${task.priority}`)
     : t("tasks:priority.no-priority");

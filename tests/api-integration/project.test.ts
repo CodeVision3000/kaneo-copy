@@ -77,14 +77,22 @@ describe("API integration: project creation", () => {
       orderBy: (column, { asc }) => [asc(column.position)],
     });
 
-    expect(columns).toHaveLength(4);
+    expect(columns).toHaveLength(7);
     expect(columns.map((column) => column.slug)).toEqual([
-      "to-do",
+      "scheduled",
+      "ready",
       "in-progress",
-      "in-review",
-      "done",
+      "awaiting-clearance",
+      "awaiting-inspection",
+      "complete",
+      "energized",
     ]);
+    // Only "energized" is terminal: construction-complete work is not finished
+    // until the circuit is back in service.
     expect(columns.map((column) => column.isFinal)).toEqual([
+      false,
+      false,
+      false,
       false,
       false,
       false,

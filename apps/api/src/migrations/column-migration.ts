@@ -7,13 +7,9 @@ import {
   taskTable,
   workflowRuleTable,
 } from "../database/schema";
+import { DEFAULT_PROJECT_COLUMNS } from "../project/controllers/create-project";
 
-const DEFAULT_COLUMNS = [
-  { name: "To Do", slug: "to-do", position: 0, isFinal: false },
-  { name: "In Progress", slug: "in-progress", position: 1, isFinal: false },
-  { name: "In Review", slug: "in-review", position: 2, isFinal: false },
-  { name: "Done", slug: "done", position: 3, isFinal: true },
-];
+const DEFAULT_COLUMNS = DEFAULT_PROJECT_COLUMNS;
 
 const EVENT_MAPPING: Record<string, string> = {
   onBranchPush: "branch_push",
@@ -115,24 +111,24 @@ export async function migrateColumns() {
         }
 
         // Add default rules for issue events
-        const todoColumnId = columnMap.get("to-do");
-        const doneColumnId = columnMap.get("done");
+        const openedColumnId = columnMap.get("scheduled");
+        const closedColumnId = columnMap.get("complete");
 
-        if (todoColumnId) {
+        if (openedColumnId) {
           await ensureMigrationWorkflowRule(
             project.id,
             forgeType,
             "issue_opened",
-            todoColumnId,
+            openedColumnId,
           );
         }
 
-        if (doneColumnId) {
+        if (closedColumnId) {
           await ensureMigrationWorkflowRule(
             project.id,
             forgeType,
             "issue_closed",
-            doneColumnId,
+            closedColumnId,
           );
         }
       } catch {

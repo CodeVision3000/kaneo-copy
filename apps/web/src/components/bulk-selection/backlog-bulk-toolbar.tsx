@@ -44,6 +44,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import labelColors from "@/constants/label-colors";
+import { TASK_PRIORITIES_BY_SEVERITY } from "@/constants/priorities";
 import { useBulkOperations } from "@/hooks/mutations/task/use-bulk-operations";
 import useGetLabelsByWorkspace from "@/hooks/queries/label/use-get-labels-by-workspace";
 import useActiveWorkspace from "@/hooks/queries/workspace/use-active-workspace";
@@ -79,10 +80,10 @@ function BacklogBulkToolbar() {
 
   const priorityOptions = useMemo(
     () => [
-      { value: "urgent", label: getPriorityLabel("urgent") },
-      { value: "high", label: getPriorityLabel("high") },
-      { value: "medium", label: getPriorityLabel("medium") },
-      { value: "low", label: getPriorityLabel("low") },
+      ...TASK_PRIORITIES_BY_SEVERITY.map((value) => ({
+        value,
+        label: getPriorityLabel(value),
+      })),
       { value: "no-priority", label: getPriorityLabel("no-priority") },
     ],
     [],

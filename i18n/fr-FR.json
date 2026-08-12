@@ -1279,20 +1279,23 @@
 	"tasks": {
 		"status": {
 			"label": "Statut",
-			"to-do": "À faire",
+			"scheduled": "Scheduled",
+			"ready": "Ready to Build",
 			"in-progress": "En cours",
-			"in-review": "En revue",
-			"done": "Fait",
+			"awaiting-clearance": "Awaiting Clearance",
+			"awaiting-inspection": "Awaiting Inspection",
+			"complete": "Complete",
+			"energized": "Energized",
 			"archived": "Archivé",
-			"planned": "Planifié"
+			"planned": "Backlog"
 		},
 		"priority": {
 			"label": "Priorité",
 			"no-priority": "Pas de priorité",
-			"low": "Basse",
-			"medium": "Moyenne",
-			"high": "Haute",
-			"urgent": "Urgente"
+			"routine": "Routine",
+			"expedited": "Expedited",
+			"urgent": "Urgente",
+			"emergency": "Emergency"
 		},
 		"boardSearchPlaceholder": "Rechercher des tickets...",
 		"view": {

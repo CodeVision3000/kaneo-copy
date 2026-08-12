@@ -32,8 +32,8 @@ describe("API integration: task creation", () => {
       body: JSON.stringify({
         title: "Unauthorized task",
         description: "Should not be created",
-        priority: "low",
-        status: "to-do",
+        priority: "routine",
+        status: "scheduled",
       }),
     });
 
@@ -54,9 +54,9 @@ describe("API integration: task creation", () => {
       userId: member.user.id,
       title: "Existing task",
       description: "Already there",
-      status: "to-do",
-      columnId: columns.todo.id,
-      priority: "medium",
+      status: "scheduled",
+      columnId: columns.scheduled.id,
+      priority: "expedited",
       number: 1,
       position: 1,
     });
@@ -76,8 +76,8 @@ describe("API integration: task creation", () => {
       body: JSON.stringify({
         title: "Ship integration flow",
         description: "Cover the first create-task path",
-        priority: "high",
-        status: "to-do",
+        priority: "urgent",
+        status: "scheduled",
         userId: member.user.id,
       }),
     });
@@ -100,8 +100,8 @@ describe("API integration: task creation", () => {
       projectId: project.id,
       title: "Ship integration flow",
       description: "Cover the first create-task path",
-      priority: "high",
-      status: "to-do",
+      priority: "urgent",
+      status: "scheduled",
       userId: member.user.id,
       number: 2,
       position: 2,
@@ -115,11 +115,11 @@ describe("API integration: task creation", () => {
     expect(persistedTask).toMatchObject({
       id: payload.id,
       projectId: project.id,
-      columnId: columns.todo.id,
+      columnId: columns.scheduled.id,
       userId: member.user.id,
       title: "Ship integration flow",
-      priority: "high",
-      status: "to-do",
+      priority: "urgent",
+      status: "scheduled",
       number: 2,
       position: 2,
     });
@@ -153,8 +153,8 @@ describe("API integration: task creation", () => {
       body: JSON.stringify({
         title: "Forbidden task",
         description: "Should not be created",
-        priority: "low",
-        status: "to-do",
+        priority: "routine",
+        status: "scheduled",
       }),
     });
 
@@ -190,7 +190,7 @@ describe("API integration: task creation", () => {
       body: JSON.stringify({
         title: "Plan release cut",
         description: "Track optional fields too",
-        priority: "medium",
+        priority: "expedited",
         status: "in-progress",
         startDate: "2026-04-01T09:00:00.000Z",
         dueDate: "2026-04-05T17:00:00.000Z",
@@ -250,7 +250,7 @@ describe("API integration: task creation", () => {
       body: JSON.stringify({
         title: "Future status task",
         description: "Status does not map to a seeded column",
-        priority: "low",
+        priority: "routine",
         status: "planned",
       }),
     });

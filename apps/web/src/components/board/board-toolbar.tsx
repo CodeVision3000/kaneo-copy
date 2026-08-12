@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/menu";
 import labelColors from "@/constants/label-colors";
+import { TASK_PRIORITIES_BY_SEVERITY } from "@/constants/priorities";
 import {
   type BoardFilters,
   DUE_DATE_FILTER_VALUES,
@@ -336,7 +337,7 @@ export default function BoardToolbar({
                         <CheckSlot checked={selectedPriorityIds.length === 0} />
                         {t("tasks:boardFilters.allPriorities")}
                       </button>
-                      {["urgent", "high", "medium", "low"].map((priority) => (
+                      {TASK_PRIORITIES_BY_SEVERITY.map((priority) => (
                         <button
                           key={priority}
                           className={`inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-left text-xs ${

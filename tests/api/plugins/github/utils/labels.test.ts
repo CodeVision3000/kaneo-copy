@@ -21,8 +21,8 @@ function createOctokitMock() {
 
 describe("github labels helpers", () => {
   it("returns explicit and fallback colors", () => {
-    expect(getLabelColor("priority:urgent")).toBe("EF4444");
-    expect(getLabelColor("status:done")).toBe("10B981");
+    expect(getLabelColor("priority:emergency")).toBe("EF4444");
+    expect(getLabelColor("status:complete")).toBe("10B981");
     expect(getLabelColor("custom:label")).toBe("6B7280");
   });
 
@@ -33,8 +33,8 @@ describe("github labels helpers", () => {
       .mockRejectedValueOnce(new Error("missing"));
 
     await ensureLabelsExist(octokit as never, "usekaneo", "kaneo", [
-      "status:done",
-      "priority:high",
+      "status:complete",
+      "priority:urgent",
     ]);
 
     expect(octokit.rest.issues.getLabel).toHaveBeenCalledTimes(2);
@@ -42,7 +42,7 @@ describe("github labels helpers", () => {
     expect(octokit.rest.issues.createLabel).toHaveBeenCalledWith({
       owner: "usekaneo",
       repo: "kaneo",
-      name: "priority:high",
+      name: "priority:urgent",
       color: "F97316",
     });
   });
@@ -52,8 +52,8 @@ describe("github labels helpers", () => {
     octokit.rest.issues.getLabel.mockResolvedValue({});
 
     await addLabelsToIssue(octokit as never, "usekaneo", "kaneo", 12, [
-      "priority:low",
-      "status:done",
+      "priority:routine",
+      "status:complete",
     ]);
 
     expect(octokit.rest.issues.getLabel).toHaveBeenCalledTimes(2);
@@ -62,7 +62,7 @@ describe("github labels helpers", () => {
       owner: "usekaneo",
       repo: "kaneo",
       issue_number: 12,
-      labels: ["priority:low", "status:done"],
+      labels: ["priority:routine", "status:complete"],
     });
   });
 
@@ -71,7 +71,7 @@ describe("github labels helpers", () => {
     octokit.rest.issues.removeLabel.mockRejectedValue({ status: 404 });
 
     await expect(
-      removeLabel(octokit as never, "usekaneo", "kaneo", 21, "status:done"),
+      removeLabel(octokit as never, "usekaneo", "kaneo", 21, "status:complete"),
     ).resolves.toBeUndefined();
   });
 
@@ -81,7 +81,7 @@ describe("github labels helpers", () => {
     octokit.rest.issues.removeLabel.mockRejectedValue(error);
 
     await expect(
-      removeLabel(octokit as never, "usekaneo", "kaneo", 21, "status:done"),
+      removeLabel(octokit as never, "usekaneo", "kaneo", 21, "status:complete"),
     ).rejects.toThrow("gone");
   });
 });

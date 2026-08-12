@@ -62,7 +62,13 @@ function run(fn: () => Promise<unknown>): Promise<CallToolResult> {
     );
 }
 
-const PRIORITIES = ["no-priority", "low", "medium", "high", "urgent"] as const;
+const PRIORITIES = [
+  "no-priority",
+  "routine",
+  "expedited",
+  "urgent",
+  "emergency",
+] as const;
 
 function isTaskPriority(v: string): v is (typeof PRIORITIES)[number] {
   return (PRIORITIES as readonly string[]).includes(v);
@@ -153,10 +159,10 @@ function buildFullTaskUpdateBody(
 
 const prioritySchema = z.enum([
   "no-priority",
-  "low",
-  "medium",
-  "high",
+  "routine",
+  "expedited",
   "urgent",
+  "emergency",
 ]);
 const nonEmptyString = z.string().trim().min(1);
 const optionalNonEmptyString = nonEmptyString.optional();

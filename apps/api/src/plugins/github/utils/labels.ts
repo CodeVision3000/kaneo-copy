@@ -1,14 +1,17 @@
 import type { Octokit } from "octokit";
 
 const labelColors: Record<string, string> = {
-  "priority:low": "0EA5E9",
-  "priority:medium": "EAB308",
-  "priority:high": "F97316",
-  "priority:urgent": "EF4444",
-  "status:to-do": "6B7280",
+  "priority:routine": "0EA5E9",
+  "priority:expedited": "EAB308",
+  "priority:urgent": "F97316",
+  "priority:emergency": "EF4444",
+  "status:scheduled": "6B7280",
+  "status:ready": "0EA5E9",
   "status:in-progress": "3B82F6",
-  "status:in-review": "8B5CF6",
-  "status:done": "10B981",
+  "status:awaiting-clearance": "F97316",
+  "status:awaiting-inspection": "8B5CF6",
+  "status:complete": "10B981",
+  "status:energized": "22C55E",
   "status:planned": "8B5CF6",
   "status:archived": "6B7280",
 };

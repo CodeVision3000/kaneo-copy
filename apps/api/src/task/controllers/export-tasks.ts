@@ -46,7 +46,7 @@ async function exportTasks(projectId: string) {
       title: task.title,
       description: task.description || "",
       status: task.status,
-      priority: task.priority || "low",
+      priority: task.priority || "routine",
       dueDate: task.dueDate ? new Date(task.dueDate).toISOString() : null,
       startDate: task.startDate ? new Date(task.startDate).toISOString() : null,
       userId: task.userId || null,
