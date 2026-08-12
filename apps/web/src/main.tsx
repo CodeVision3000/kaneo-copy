@@ -18,24 +18,14 @@ import { routeTree } from "./routeTree.gen";
 captureCheckoutIntent();
 
 console.log(`
-                     ////////  
-              /////  ////////  
-            //////// ////////  
-  //////// ///////// ///////   
-  //////// ///////// //////    
-  //////// ///////// ////      
-  //////// ///////// ///       
-  //////// ///////// /////     
-  //////// ///////// //////    
-  //////// ///////// ////////  
-  //////// ///////// ////////  
-  //////// ///////// ////////  
-  //////// ////////            
-  ////////  /////              
-  ///////                      
-                   
-  
-  All you need. Nothing you don't.
+   ____  ____   _    ____   ____
+  / ___||  _  /   |  _  / ___|
+  ___ | |_) / _  | |_) | |
+   ___) |  __/ ___ |  _ <| |___
+  |____/|_| /_/   __| _\\____|
+
+  Sargent Project And Resource Control
+  Built for the grid. Transmission, distribution, substation.
 `);
 
 const router = createRouter({

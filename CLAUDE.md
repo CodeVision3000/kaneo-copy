@@ -4,7 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Kaneo is a self-hosted project management platform built with simplicity and performance as core principles. The codebase is organized as a **pnpm monorepo** with TurboRepo.
+SPARC (Sargent Project And Resource Control) is a self-hosted project management platform for electric utility **transmission**, **distribution**, and **substation** construction. It is a fork of Kaneo, organized as a **pnpm monorepo** with TurboRepo.
+
+**Domain model**: work hangs off `circuit` (lines, feeders, buses) and `grid_asset` (structures, spans, bays, equipment) rather than a flat task list. Work is gated by `outage` (clearances), `permit`, and `inspection` hold points. It is priced in `construction_unit` codes via `pay_item`, and `production_entry` records what got installed, which drives earned value. `crew`, `daily_report`, `labor_entry`, and `equipment_entry` cover field execution.
+
+**Vocabulary**: task statuses are per-project `column` rows seeded as Scheduled → Ready to Build → In Progress → Awaiting Clearance → Awaiting Inspection → Complete → Energized (only Energized is `isFinal`). Priorities are routine / expedited / urgent / emergency. `planned` and `archived` remain virtual statuses (backlog and archive) and must never be used as column slugs.
 
 **Key Philosophy**: Features exist to solve real problems, not to impress. Avoid over-engineering - keep solutions simple and focused. Don't add features, refactoring, or improvements beyond what was asked.
 
@@ -69,7 +73,7 @@ kaneo/
 ├── apps/
 │   ├── api/          # Backend API (Hono/Node.js/PostgreSQL)
 │   ├── web/          # Frontend app (React/Vite/TanStack)
-│   └── docs/         # Documentation site (Next.js)
+│   └── docs/         # Documentation site (Mintlify)
 ├── packages/
 │   ├── email/        # Email utilities
 │   ├── libs/         # Shared libraries
@@ -203,17 +207,20 @@ See `ENVIRONMENT_SETUP.md` for detailed configuration and troubleshooting.
 ### Database Changes
 
 1. Modify schema in `apps/api/src/database/schema.ts`
-2. Generate migration: `pnpm --filter @kaneo/api db:generate`
-3. Migration auto-runs on next API startup
-4. Always use CUID2 for IDs, include timestamps, specify cascade behavior
+2. **Register the table and its relations in the `schema` object in `apps/api/src/database/index.ts`** — it is an explicit allowlist, and an unregistered table makes its relations dead and `db.query.<table>` throw
+3. Generate migration: `pnpm --filter @kaneo/api db:generate`
+4. Migration auto-runs on next API startup
+5. Always use CUID2 for IDs, include timestamps, specify cascade behavior
+6. Money, hours, and quantities are stored as `text` and cast with `::numeric` in SQL so decimal arithmetic is exact; validate with `isDecimalString` before writing
 
 ### Adding API Endpoints
 
 1. Create controller in `apps/api/src/{feature}/controllers/`
 2. Add route in `apps/api/src/{feature}/index.ts`
-3. Use `describeRoute` for OpenAPI docs
-4. Use `validator` with Valibot schema
-5. Keep route handler thin - business logic in controller
+3. Wire it into `apps/api/src/index.ts` in **five** places: import, `api.route(...)`, the object `createApp()` returns, the module-scope destructuring, and the `AppType` union. Miss the last one and `client.<entity>` silently fails to type-check in `apps/web`
+4. Use `describeRoute` for OpenAPI docs
+5. Use `validator` with Valibot schema
+6. Keep route handler thin - business logic in controller
 
 ### Adding Frontend Features
 

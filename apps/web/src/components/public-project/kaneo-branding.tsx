@@ -1,11 +1,11 @@
 import { useTranslation } from "react-i18next";
 
-export function KaneoBranding() {
+export function SPARCBranding() {
   const { t } = useTranslation();
 
   return (
     <a
-      href="https://kaneo.app"
+      href="https://example.invalid"
       target="_blank"
       rel="noopener noreferrer"
       className="hover:text-foreground transition-colors"

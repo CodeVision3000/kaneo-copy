@@ -1,175 +1,76 @@
-<p align="center">
-  <a href="https://kaneo.app">
-    <img src="https://assets.kaneo.app/logo-text.png" alt="Kaneo's logo" width="450" />
-  </a>
-</p>
+# SPARC
 
-<div align="center">
+**S**argent **P**roject **A**nd **R**esource **C**ontrol — project management for electric
+utility **transmission**, **distribution**, and **substation** construction.
 
-[![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/usekaneo/kaneo/ci.yml?branch=main)](https://github.com/usekaneo/kaneo/actions)
-[![Discord](https://img.shields.io/discord/1326250681530843178?color=7389D8&label=&logo=discord&logoColor=ffffff)](https://discord.gg/rU4tSyhXXU)
-[![Sponsors](https://img.shields.io/github/sponsors/andrejsshell)](https://github.com/sponsors/andrejsshell)
+SPARC is a fork of [Kaneo](https://github.com/usekaneo/kaneo) (MIT). It keeps Kaneo's
+workspaces, boards, and collaboration and replaces the generic project vocabulary with the
+way utility construction actually runs.
 
-</div>
+## What makes it utility-specific
 
-<div align="center">
-  <h3>
-    <a href="https://kaneo.app/docs/core">Quick Start</a>
-    <span> | </span>
-    <a href="https://kaneo.app">Website</a>
-    <span> | </span>
-    <a href="https://cloud.kaneo.app">Cloud</a>
-    <span> | </span>
-    <a href="https://discord.gg/rU4tSyhXXU">Discord</a>
-  </h3>
-</div>
+**The workflow ends at energization.** Tasks move Scheduled → Ready to Build → In Progress
+→ Awaiting Clearance → Awaiting Inspection → Complete → Energized. Only *Energized* is
+terminal: construction-complete work isn't finished until the circuit is back in service.
+Priorities are the work-order ladder crews actually use — routine, expedited, urgent,
+emergency.
 
+**Work hangs off the grid, not a feature list.** Circuits (lines, feeders, buses) carry
+voltage class and end substations. Grid assets are the discrete positions on them —
+structures, spans, bays, equipment, foundations, duct banks, work-order locations — with
+designations, ordering sequence, coordinates, and stationing. Tasks attach to an asset, so
+"how far along is PS-142" is a question the app can answer. Structure lists import from CSV
+because that's how they arrive.
 
-<p align="center">
-  <img src="https://assets.kaneo.app/readme.png" alt="Kaneo Dashboard" />
-</p>
+**Nothing starts until it's cleared.** Outages and clearances track three separate windows:
+what was requested, what the utility granted, and what actually happened. Permits track ROW
+access, road openings, DOT and railroad crossings, and environmental approvals with
+expiries. Inspections can be marked as **hold points**, and a hold point blocks its task
+from completing until it passes or is waived — enforced on every status path, including
+bulk moves.
 
-## Why Kaneo?
+**It's priced in construction units.** The workspace holds a CU catalog — the utility's own
+codes with a unit of measure, standard manhours, and separate install / remove / transfer
+rates, loaded from a rate-sheet CSV. A project's estimate is a list of pay items; production
+is that list filled in as work gets done:
 
-After years of using bloated, overcomplicated project management platforms that distracted from actual work, we built Kaneo to be different.
-
-The problem with most tools isn't that they lack features—it's that they have **too many**. Every notification, every unnecessary button, every complex workflow pulls your team away from what matters: **building great products**.
-
-We believe the best tools are **invisible**. They should amplify your team's natural workflow, not force you to adapt to theirs. Kaneo is built on the principle that **less is more**—every feature exists because it solves a real problem, not because it looks impressive in a demo.
-
-**What makes it different:**
-- **Clean interface** that focuses on your work, not the tool
-- **Self-hosted** so your data stays yours
-- **Actually fast** because we care about performance
-- **Open source** with a permissive MIT license
-
-Learn more about Kaneo's features and capabilities in our [documentation](https://kaneo.app/docs/core).
-
-## Sponsors
-
-Kaneo is open source. If you find it useful, consider [sponsoring the project](https://github.com/sponsors/andrejsshell) to help support ongoing development.
-
-<!-- sponsors --><a href="https://github.com/danielsada"><img src="https:&#x2F;&#x2F;github.com&#x2F;danielsada.png" width="60px" alt="User avatar: Daniel Sada" /></a><a href="https://github.com/randoneering"><img src="https:&#x2F;&#x2F;github.com&#x2F;randoneering.png" width="60px" alt="User avatar: (justin)randoneering" /></a><!-- sponsors -->
-
-## Getting Started
-
-### One-Click Deployment with drim
-
-For straightforward deployments, use [drim](https://github.com/usekaneo/drim) - a CLI tool that handles everything for you:
-
-```bash
-curl -fsSL https://assets.kaneo.app/install.sh | sh
-drim setup
+```
+earned revenue = installed qty × unit price
+earned hours   = installed qty × standard hours
+productivity   = earned hours ÷ actual hours from the daily reports
 ```
 
-That's it. Your Kaneo instance will be running with automatic HTTPS, database setup, and all services configured.
+Pay items snapshot the rate they were bid at, so repricing the catalog never restates work
+already sold. Money and quantities are stored as exact decimals and the arithmetic runs in
+Postgres, not in floats.
 
-Perfect for quick deployments and production setups where you want things to just work.
+**Crews file the day.** Crews, crew members, and equipment are workspace-level, because
+crews and iron move between jobs. Daily reports carry weather, work performed, delays, a
+tailboard/JHA with minimum approach distance and grounding plan, labor hours by
+classification with overtime, and equipment hours.
 
-### Quick Start with Docker Compose
+## Quick start
 
-The fastest way to try Kaneo is with Docker Compose. This sets up Kaneo and PostgreSQL with a single Kaneo container:
-
-```yaml
-services:
-  postgres:
-    image: postgres:16-alpine
-    env_file:
-      - .env
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U kaneo -d kaneo"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  kaneo:
-    image: ghcr.io/usekaneo/kaneo:latest
-    ports:
-      - "5173:5173"
-    env_file:
-      - .env
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
-
-volumes:
-  postgres_data:
-```
-
-Save this as `compose.yml`, copy `.env.sample` to `.env`, uncomment `KANEO_CLIENT_URL=http://localhost:5173`, and set `POSTGRES_PASSWORD=<password>` and `AUTH_SECRET=<output of openssl rand -hex 32>`, run `docker compose up -d`, and open [http://localhost:5173](http://localhost:5173).
-
-In Docker Compose, the bundled Kaneo container reaches PostgreSQL at the service hostname `postgres`.
-If you run the API on your host instead of inside Compose, use `localhost` or set `DATABASE_URL` explicitly.
-
-> **Important:** See our [full documentation](https://kaneo.app/docs/core) for detailed setup instructions, environment variable configuration, and troubleshooting guides.
-
-### Development Setup
-
-For development, see our [Environment Setup Guide](ENVIRONMENT_SETUP.md) for detailed instructions on configuring environment variables and troubleshooting common issues like CORS problems.
-
-### Configuration
-
-Kaneo requires several environment variables to be configured. The Docker Compose setup above handles the database automatically, but you'll need to configure environment variables for the API and web services.
-
-For complete configuration instructions, including all required environment variables, database setup for non-Docker deployments, and advanced settings, see the [documentation](https://kaneo.app/docs/core). Advanced deployments can still use the separate `ghcr.io/usekaneo/api` and `ghcr.io/usekaneo/web` images.
-
-## Kubernetes Deployment
-
-If you're running Kubernetes, we provide a comprehensive Helm chart. Check out the [Helm chart documentation](./charts/kaneo/README.md) for detailed installation instructions, production configuration examples, TLS setup, and more.
-
-## Development
-
-Want to hack on Kaneo? See our [Environment Setup Guide](ENVIRONMENT_SETUP.md) for detailed instructions on configuring environment variables and troubleshooting common issues like CORS problems.
-
-Quick start:
 ```bash
-# Clone and install dependencies
-git clone https://github.com/usekaneo/kaneo.git
-cd kaneo
 pnpm install
-
-# Create a .env file in the root with required environment variables
-# See ENVIRONMENT_SETUP.md for detailed instructions
-
-# Start development servers
-pnpm dev
+cp .env.sample .env      # set DATABASE_URL and AUTH_SECRET
+pnpm dev                 # API on :1337, web on :5173
 ```
 
-For contributing guidelines, code structure, and development best practices, check out our [contributing guide](CONTRIBUTING.md) and [documentation](https://kaneo.app/docs/core).
+Migrations run automatically on API startup.
 
-## Community
+## Tests
 
-- **[Discord](https://discord.gg/rU4tSyhXXU)** - Chat with users and contributors
-- **[GitHub Issues](https://github.com/usekaneo/kaneo/issues)** - Bug reports and feature requests
-- **[Documentation](https://kaneo.app/docs/core)** - Detailed guides, API docs, and tutorials
+```bash
+pnpm test                # unit tests (API, web, packages)
+pnpm test:integration    # requires PostgreSQL; DATABASE_URL must end in _test
+```
 
-## Contributing
+## Stack
 
-We're always looking for help, whether that's:
-- Reporting bugs or suggesting features
-- Improving documentation
-- Contributing code
-- Helping other users on Discord
-
-Check out [CONTRIBUTING.md](CONTRIBUTING.md) for the details on how to get involved.
+Hono + Drizzle + PostgreSQL on the API, React 19 + TanStack Router/Query + Tailwind v4 on
+the web, in a pnpm/Turborepo monorepo. See `CLAUDE.md` for architecture and conventions.
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-<div align="center">
-  <img src="https://repobeats.axiom.co/api/embed/3e8367ec2b2350e4fc48662df33c81dac657b833.svg" alt="Repobeats analytics image" />
-</div>
-
-<p align="center">
-  Built with ❤️ by the Kaneo team and <a href="#contributors">contributors</a>
-</p>
+MIT, inherited from Kaneo. See [LICENSE](./LICENSE).
