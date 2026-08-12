@@ -4,10 +4,12 @@ import {
   activityTable,
   apikeyTable,
   assetTable,
+  circuitTable,
   columnTable,
   commentTable,
   externalLinkTable,
   githubIntegrationTable,
+  gridAssetTable,
   integrationTable,
   invitationTable,
   labelTable,
@@ -103,6 +105,8 @@ export const projectTableRelations = relations(
     }),
     tasks: many(taskTable),
     assets: many(assetTable),
+    circuits: many(circuitTable),
+    gridAssets: many(gridAssetTable),
     columns: many(columnTable),
     workflowRules: many(workflowRuleTable),
     githubIntegration: many(githubIntegrationTable),
@@ -146,6 +150,10 @@ export const taskTableRelations = relations(taskTable, ({ one, many }) => ({
   column: one(columnTable, {
     fields: [taskTable.columnId],
     references: [columnTable.id],
+  }),
+  gridAsset: one(gridAssetTable, {
+    fields: [taskTable.gridAssetId],
+    references: [gridAssetTable.id],
   }),
   timeEntries: many(timeEntryTable),
   activities: many(activityTable),
@@ -392,3 +400,35 @@ export const commentTableRelations = relations(commentTable, ({ one }) => ({
     references: [userTable.id],
   }),
 }));
+
+export const circuitTableRelations = relations(
+  circuitTable,
+  ({ one, many }) => ({
+    project: one(projectTable, {
+      fields: [circuitTable.projectId],
+      references: [projectTable.id],
+    }),
+    gridAssets: many(gridAssetTable),
+  }),
+);
+
+export const gridAssetTableRelations = relations(
+  gridAssetTable,
+  ({ one, many }) => ({
+    project: one(projectTable, {
+      fields: [gridAssetTable.projectId],
+      references: [projectTable.id],
+    }),
+    circuit: one(circuitTable, {
+      fields: [gridAssetTable.circuitId],
+      references: [circuitTable.id],
+    }),
+    parent: one(gridAssetTable, {
+      fields: [gridAssetTable.parentGridAssetId],
+      references: [gridAssetTable.id],
+      relationName: "gridAssetParent",
+    }),
+    children: many(gridAssetTable, { relationName: "gridAssetParent" }),
+    tasks: many(taskTable),
+  }),
+);

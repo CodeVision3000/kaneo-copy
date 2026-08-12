@@ -105,7 +105,15 @@ const project = new Hono<{
     requireWorkspacePermission({ project: ["create"] }),
     requireEntitlement,
     async (c) => {
-      const { name, icon, slug, ...utility } = c.req.valid("json");
+      // Discard the body's workspaceId: the resolved one from workspaceAccess is the
+      // authorized value, and spreading the raw body would overwrite it.
+      const {
+        name,
+        icon,
+        slug,
+        workspaceId: _bodyWorkspaceId,
+        ...utility
+      } = c.req.valid("json");
       const workspaceId = c.get("workspaceId");
       const newProject = await createProjectCtrl({
         workspaceId,

@@ -1,4 +1,11 @@
-import { CalendarDays, Check, Menu, Plus, SquareKanban } from "lucide-react";
+import {
+  CalendarDays,
+  Check,
+  Menu,
+  Plus,
+  Radio,
+  SquareKanban,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -12,10 +19,11 @@ import { cn } from "@/lib/cn";
 type MobileProjectNavProps = {
   workspaceId: string;
   projectId: string;
-  activeView: "backlog" | "board" | "gantt";
+  activeView: "backlog" | "board" | "gantt" | "structures";
   onSelectBoard: () => void;
   onSelectBacklog: () => void;
   onSelectGantt: () => void;
+  onSelectStructures: () => void;
   onSelectProject: (projectId: string) => void;
   onAddProject: () => void;
 };
@@ -27,6 +35,7 @@ export default function MobileProjectNav({
   onSelectBoard,
   onSelectBacklog,
   onSelectGantt,
+  onSelectStructures,
   onSelectProject,
   onAddProject,
 }: MobileProjectNavProps) {
@@ -89,6 +98,19 @@ export default function MobileProjectNav({
               >
                 <CalendarDays className="size-3.5" />
                 Gantt
+              </button>
+              <button
+                type="button"
+                onClick={onSelectStructures}
+                className={cn(
+                  "flex w-full items-center justify-center gap-1 whitespace-nowrap rounded-md border px-2 py-1.5 text-xs font-medium transition-colors",
+                  activeView === "structures"
+                    ? "border-border bg-secondary text-foreground"
+                    : "border-transparent text-muted-foreground hover:bg-accent",
+                )}
+              >
+                <Radio className="size-3.5" />
+                Structures
               </button>
             </div>
           </div>

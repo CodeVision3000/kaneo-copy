@@ -11,6 +11,7 @@ import {
   taskTable,
   workspaceTable,
 } from "../database/schema";
+import { TASK_HOLD_REASONS } from "../project/disciplines";
 import { taskSchema } from "../schemas";
 import {
   assertTaskImageKeyMatchesContext,
@@ -33,6 +34,8 @@ import updateTask from "./controllers/update-task";
 import updateTaskAssignee from "./controllers/update-task-assignee";
 import updateTaskDescription from "./controllers/update-task-description";
 import updateTaskDueDate from "./controllers/update-task-due-date";
+import updateTaskGridAsset from "./controllers/update-task-grid-asset";
+import updateTaskHold from "./controllers/update-task-hold";
 import updateTaskPriority from "./controllers/update-task-priority";
 import updateTaskStatus from "./controllers/update-task-status";
 import updateTaskTitle from "./controllers/update-task-title";
@@ -510,6 +513,75 @@ const task = new Hono<{
       const currentUserId = c.get("userId");
 
       const task = await updateTaskPriority({ id, priority, currentUserId });
+
+      return c.json(task);
+    },
+  )
+  .put(
+    "/grid-asset/:id",
+    describeRoute({
+      operationId: "updateTaskGridAsset",
+      tags: ["Tasks"],
+      description:
+        "Attach a task to a structure, span, bay, or piece of equipment. Pass null to unlink.",
+      responses: {
+        200: {
+          description: "Task grid asset updated successfully",
+          content: {
+            "application/json": { schema: resolver(taskSchema) },
+          },
+        },
+      },
+    }),
+    validator("param", v.object({ id: v.string() })),
+    validator("json", v.object({ gridAssetId: v.nullable(v.string()) })),
+    workspaceAccess.fromTask(),
+    requireWorkspacePermission({ task: ["update"] }),
+    requireEntitlement,
+    async (c) => {
+      const { id } = c.req.valid("param");
+      const { gridAssetId } = c.req.valid("json");
+      const currentUserId = c.get("userId");
+
+      const task = await updateTaskGridAsset({
+        id,
+        gridAssetId,
+        currentUserId,
+      });
+
+      return c.json(task);
+    },
+  )
+  .put(
+    "/hold/:id",
+    describeRoute({
+      operationId: "updateTaskHold",
+      tags: ["Tasks"],
+      description:
+        "Record why work is stopped (weather, materials, permits, clearance, ...). Pass null to release the hold.",
+      responses: {
+        200: {
+          description: "Task hold reason updated successfully",
+          content: {
+            "application/json": { schema: resolver(taskSchema) },
+          },
+        },
+      },
+    }),
+    validator("param", v.object({ id: v.string() })),
+    validator(
+      "json",
+      v.object({ holdReason: v.nullable(v.picklist(TASK_HOLD_REASONS)) }),
+    ),
+    workspaceAccess.fromTask(),
+    requireWorkspacePermission({ task: ["update"] }),
+    requireEntitlement,
+    async (c) => {
+      const { id } = c.req.valid("param");
+      const { holdReason } = c.req.valid("json");
+      const currentUserId = c.get("userId");
+
+      const task = await updateTaskHold({ id, holdReason, currentUserId });
 
       return c.json(task);
     },

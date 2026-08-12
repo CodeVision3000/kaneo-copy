@@ -260,6 +260,13 @@
 			"when": 1786536376018,
 			"tag": "0036_bent_thanos",
 			"breakpoints": true
+		},
+		{
+			"idx": 37,
+			"version": "7",
+			"when": 1786536887692,
+			"tag": "0037_nice_miracleman",
+			"breakpoints": true
 		}
 	]
 }

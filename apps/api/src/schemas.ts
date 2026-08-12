@@ -30,6 +30,42 @@ export const projectSchema = v.object({
   substantialCompletionDate: v.nullable(v.date()),
 });
 
+export const circuitSchema = v.object({
+  id: v.string(),
+  projectId: v.string(),
+  designation: v.string(),
+  name: v.nullable(v.string()),
+  type: v.string(),
+  voltageKv: v.nullable(v.string()),
+  substationFrom: v.nullable(v.string()),
+  substationTo: v.nullable(v.string()),
+  createdAt: v.date(),
+  updatedAt: v.date(),
+  assetCount: v.optional(v.number()),
+});
+
+export const gridAssetSchema = v.object({
+  id: v.string(),
+  projectId: v.string(),
+  circuitId: v.nullable(v.string()),
+  parentGridAssetId: v.nullable(v.string()),
+  assetType: v.string(),
+  designation: v.string(),
+  description: v.nullable(v.string()),
+  sequence: v.nullable(v.number()),
+  latitude: v.nullable(v.string()),
+  longitude: v.nullable(v.string()),
+  stationing: v.nullable(v.string()),
+  voltageKv: v.nullable(v.string()),
+  attributes: v.nullable(v.record(v.string(), v.unknown())),
+  createdAt: v.date(),
+  updatedAt: v.date(),
+  circuitDesignation: v.optional(v.nullable(v.string())),
+  taskCount: v.optional(v.number()),
+  completedTaskCount: v.optional(v.number()),
+  completionPercentage: v.optional(v.number()),
+});
+
 export const taskSchema = v.object({
   id: v.string(),
   projectId: v.string(),
@@ -48,6 +84,8 @@ export const taskSchema = v.object({
   ] as const),
   startDate: v.optional(v.date()),
   dueDate: v.optional(v.date()),
+  gridAssetId: v.nullable(v.string()),
+  holdReason: v.nullable(v.string()),
   createdAt: v.date(),
 });
 

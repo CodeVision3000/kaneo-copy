@@ -1,6 +1,7 @@
 import { createId } from "@paralleldrive/cuid2";
 import { relations, sql } from "drizzle-orm";
 import {
+  type AnyPgColumn,
   boolean,
   foreignKey,
   index,
@@ -399,6 +400,19 @@ export const taskTable = pgTable(
     priority: text("priority").default("routine"),
     startDate: timestamp("start_date", { mode: "date" }),
     dueDate: timestamp("due_date", { mode: "date" }),
+    /**
+     * The physical position this work is performed at. Optional: project-level tasks
+     * (mobilization, submittals) are not tied to a structure or bay.
+     */
+    gridAssetId: text("grid_asset_id").references(
+      (): AnyPgColumn => gridAssetTable.id,
+      { onDelete: "set null", onUpdate: "cascade" },
+    ),
+    /**
+     * Why the work is stopped. Kept separate from status so reporting can tell a
+     * weather day from a missing material or an unapproved clearance.
+     */
+    holdReason: text("hold_reason"),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" })
       .defaultNow()
@@ -410,6 +424,7 @@ export const taskTable = pgTable(
     index("task_dueDate_idx").on(table.dueDate),
     index("task_assigneeId_idx").on(table.userId),
     index("task_columnId_idx").on(table.columnId),
+    index("task_gridAssetId_idx").on(table.gridAssetId),
     unique("task_project_number_unique").on(table.projectId, table.number),
   ],
 );
@@ -987,6 +1002,108 @@ export const deviceCodeTable = pgTable(
     uniqueIndex("device_code_device_code_uidx").on(table.deviceCode),
     uniqueIndex("device_code_user_code_uidx").on(table.userCode),
     index("device_code_user_id_idx").on(table.userId),
+  ],
+);
+
+/* ------------------------------------------------------------------------------------
+ * Utility domain: the physical grid the work is performed on.
+ *
+ * A circuit is the electrical asset (a transmission line, a distribution feeder, a
+ * substation bus). A grid asset is a discrete position on it -- a structure, a span, a
+ * substation bay, a piece of equipment. Together they form the work-breakdown spine:
+ * tasks, pay items, and production all hang off a grid asset.
+ *
+ * Named "grid_asset" because "asset" is already this schema's file-attachment table.
+ * ---------------------------------------------------------------------------------- */
+
+export const circuitTable = pgTable(
+  "circuit",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    projectId: text("project_id")
+      .notNull()
+      .references(() => projectTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    /** Utility's own identifier, e.g. "Line 1234" or feeder "23F4". */
+    designation: text("designation").notNull(),
+    name: text("name"),
+    /** transmission_line | distribution_feeder | substation_bus */
+    type: text("type").notNull().default("transmission_line"),
+    voltageKv: text("voltage_kv"),
+    substationFrom: text("substation_from"),
+    substationTo: text("substation_to"),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("circuit_projectId_idx").on(table.projectId),
+    unique("circuit_project_designation_unique").on(
+      table.projectId,
+      table.designation,
+    ),
+  ],
+);
+
+export const gridAssetTable = pgTable(
+  "grid_asset",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    projectId: text("project_id")
+      .notNull()
+      .references(() => projectTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    circuitId: text("circuit_id").references(() => circuitTable.id, {
+      onDelete: "set null",
+      onUpdate: "cascade",
+    }),
+    /**
+     * Self-reference for containment: a span belongs to a line section, a breaker to a
+     * bay. Set null on delete so removing a parent orphans rather than deletes children.
+     */
+    parentGridAssetId: text("parent_grid_asset_id").references(
+      (): AnyPgColumn => gridAssetTable.id,
+      { onDelete: "set null", onUpdate: "cascade" },
+    ),
+    /** structure | span | bay | equipment | foundation | duct_bank | work_order_location */
+    assetType: text("asset_type").notNull().default("structure"),
+    /** Field identifier: structure number "PS-142", bay "Bay 3", equipment tag "T-1". */
+    designation: text("designation").notNull(),
+    description: text("description"),
+    /** Ordering along a line, so structures sort by position rather than by name. */
+    sequence: integer("sequence"),
+    latitude: text("latitude"),
+    longitude: text("longitude"),
+    /** Survey station or mile marker. */
+    stationing: text("stationing"),
+    voltageKv: text("voltage_kv"),
+    /** Discipline-specific fields: pole class and height, framing, conductor size. */
+    attributes: jsonb("attributes"),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("grid_asset_projectId_idx").on(table.projectId),
+    index("grid_asset_circuitId_idx").on(table.circuitId),
+    index("grid_asset_parentId_idx").on(table.parentGridAssetId),
+    index("grid_asset_assetType_idx").on(table.assetType),
+    unique("grid_asset_project_designation_unique").on(
+      table.projectId,
+      table.designation,
+    ),
   ],
 );
 

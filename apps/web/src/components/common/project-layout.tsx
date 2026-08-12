@@ -1,5 +1,10 @@
 import { useLocation, useNavigate } from "@tanstack/react-router";
-import { CalendarDays, SquareKanban, SquircleDashed } from "lucide-react";
+import {
+  CalendarDays,
+  Radio,
+  SquareKanban,
+  SquircleDashed,
+} from "lucide-react";
 import { type ReactNode, useState } from "react";
 import MobileProjectNav from "@/components/common/header/mobile-project-nav";
 import ProjectCrumbSelect from "@/components/common/header/project-crumb-select";
@@ -26,7 +31,7 @@ type ProjectLayoutProps = {
   headerActions?: ReactNode;
   children: ReactNode;
   showViewSwitcher?: boolean;
-  activeView?: "backlog" | "board" | "gantt";
+  activeView?: "backlog" | "board" | "gantt" | "structures";
 };
 
 export default function ProjectLayout({
@@ -51,7 +56,9 @@ export default function ProjectLayout({
       ? "backlog"
       : location.pathname.includes("/gantt")
         ? "gantt"
-        : "board");
+        : location.pathname.includes("/structures")
+          ? "structures"
+          : "board");
 
   const handleNavigateToBacklog = () => {
     navigate({
@@ -74,6 +81,13 @@ export default function ProjectLayout({
     });
   };
 
+  const handleNavigateToStructures = () => {
+    navigate({
+      to: "/dashboard/workspace/$workspaceId/project/$projectId/structures",
+      params: { workspaceId, projectId },
+    });
+  };
+
   const handleProjectSwitch = (nextProjectId: string) => {
     navigate({
       to:
@@ -81,7 +95,9 @@ export default function ProjectLayout({
           ? "/dashboard/workspace/$workspaceId/project/$projectId/backlog"
           : resolvedView === "gantt"
             ? "/dashboard/workspace/$workspaceId/project/$projectId/gantt"
-            : "/dashboard/workspace/$workspaceId/project/$projectId/board",
+            : resolvedView === "structures"
+              ? "/dashboard/workspace/$workspaceId/project/$projectId/structures"
+              : "/dashboard/workspace/$workspaceId/project/$projectId/board",
       params: {
         workspaceId,
         projectId: nextProjectId,
@@ -135,6 +151,7 @@ export default function ProjectLayout({
                 onSelectBacklog={handleNavigateToBacklog}
                 onSelectBoard={handleNavigateToBoard}
                 onSelectGantt={handleNavigateToGantt}
+                onSelectStructures={handleNavigateToStructures}
                 onSelectProject={handleProjectSwitch}
                 onAddProject={() => setIsCreateProjectModalOpen(true)}
               />
@@ -177,6 +194,20 @@ export default function ProjectLayout({
                 >
                   <CalendarDays className="size-3.5" />
                   Gantt
+                </Button>
+                <Button
+                  variant={
+                    resolvedView === "structures" ? "secondary" : "ghost"
+                  }
+                  size="xs"
+                  onClick={handleNavigateToStructures}
+                  className={cn(
+                    "h-6 gap-1.5 rounded-md px-2 text-xs",
+                    resolvedView !== "structures" && "text-muted-foreground",
+                  )}
+                >
+                  <Radio className="size-3.5" />
+                  Structures
                 </Button>
               </div>
             )}

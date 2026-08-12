@@ -21,6 +21,7 @@ import * as v from "valibot";
 import activity from "./activity";
 import { auth } from "./auth";
 import billing from "./billing";
+import circuit from "./circuit";
 import column from "./column";
 import comment from "./comment";
 import config from "./config";
@@ -35,6 +36,7 @@ import giteaIntegration, { handleGiteaWebhookRoute } from "./gitea-integration";
 import githubIntegration, {
   handleGithubWebhookRoute,
 } from "./github-integration";
+import gridAsset from "./grid-asset";
 import getInstanceStatus from "./instance/controllers/get-instance-status";
 import invitation from "./invitation";
 import label from "./label";
@@ -555,6 +557,8 @@ export function createApp() {
   const projectApi = api.route("/project", project);
   const taskApi = api.route("/task", task);
   const columnApi = api.route("/column", column);
+  const circuitApi = api.route("/circuit", circuit);
+  const gridAssetApi = api.route("/grid-asset", gridAsset);
   const activityApi = api.route("/activity", activity);
   const commentApi = api.route("/comment", comment);
   const timeEntryApi = api.route("/time-entry", timeEntry);
@@ -729,7 +733,9 @@ export function createApp() {
     injectWebSocket,
     activityApi,
     billingApi,
+    circuitApi,
     columnApi,
+    gridAssetApi,
     commentApi,
     configApi,
     discordIntegrationApi,
@@ -849,7 +855,9 @@ const {
   injectWebSocket,
   activityApi,
   billingApi,
+  circuitApi,
   columnApi,
+  gridAssetApi,
   commentApi,
   configApi,
   discordIntegrationApi,
@@ -885,7 +893,9 @@ if (isMainModule) {
 
 export type AppType =
   | typeof billingApi
+  | typeof circuitApi
   | typeof configApi
+  | typeof gridAssetApi
   | typeof projectApi
   | typeof taskApi
   | typeof columnApi
