@@ -25,6 +25,7 @@ import circuit from "./circuit";
 import column from "./column";
 import comment from "./comment";
 import config from "./config";
+import constructionUnit from "./construction-unit";
 import db, { getDatabase, schema } from "./database";
 import { prepareDatabaseStartup } from "./database/prepare-database-startup";
 import { waitForDatabase } from "./database/wait-for-database";
@@ -48,6 +49,7 @@ import notification from "./notification";
 import notificationPreferences from "./notification-preferences";
 import oauth from "./oauth";
 import outage from "./outage";
+import payItem from "./pay-item";
 import permit from "./permit";
 import { initializePlugins } from "./plugins";
 import { migrateGitHubIntegration } from "./plugins/github/migration";
@@ -565,6 +567,8 @@ export function createApp() {
   const outageApi = api.route("/outage", outage);
   const permitApi = api.route("/permit", permit);
   const inspectionApi = api.route("/inspection", inspection);
+  const constructionUnitApi = api.route("/construction-unit", constructionUnit);
+  const payItemApi = api.route("/pay-item", payItem);
   const activityApi = api.route("/activity", activity);
   const commentApi = api.route("/comment", comment);
   const timeEntryApi = api.route("/time-entry", timeEntry);
@@ -741,6 +745,7 @@ export function createApp() {
     billingApi,
     circuitApi,
     columnApi,
+    constructionUnitApi,
     gridAssetApi,
     commentApi,
     configApi,
@@ -756,6 +761,7 @@ export function createApp() {
     notificationApi,
     notificationPreferencesApi,
     outageApi,
+    payItemApi,
     permitApi,
     projectApi,
     publicProjectApi,
@@ -866,6 +872,7 @@ const {
   billingApi,
   circuitApi,
   columnApi,
+  constructionUnitApi,
   gridAssetApi,
   commentApi,
   configApi,
@@ -881,6 +888,7 @@ const {
   notificationApi,
   notificationPreferencesApi,
   outageApi,
+  payItemApi,
   permitApi,
   projectApi,
   publicProjectApi,
@@ -906,10 +914,12 @@ if (isMainModule) {
 export type AppType =
   | typeof billingApi
   | typeof circuitApi
+  | typeof constructionUnitApi
   | typeof configApi
   | typeof gridAssetApi
   | typeof inspectionApi
   | typeof outageApi
+  | typeof payItemApi
   | typeof permitApi
   | typeof projectApi
   | typeof taskApi

@@ -7,6 +7,12 @@ import {
   circuitTable,
   columnTable,
   commentTable,
+  constructionUnitTable,
+  crewMemberTable,
+  crewTable,
+  dailyReportTable,
+  equipmentEntryTable,
+  equipmentTable,
   externalLinkTable,
   githubIntegrationTable,
   gridAssetTable,
@@ -14,11 +20,15 @@ import {
   integrationTable,
   invitationTable,
   labelTable,
+  laborEntryTable,
   notificationTable,
   outageTable,
+  payItemTable,
   permitTable,
+  productionEntryTable,
   projectTable,
   sessionTable,
+  tailboardTable,
   taskOutageTable,
   taskRelationTable,
   taskReminderSentTable,
@@ -497,6 +507,158 @@ export const inspectionTableRelations = relations(
     gridAsset: one(gridAssetTable, {
       fields: [inspectionTable.gridAssetId],
       references: [gridAssetTable.id],
+    }),
+  }),
+);
+
+export const crewTableRelations = relations(crewTable, ({ one, many }) => ({
+  workspace: one(workspaceTable, {
+    fields: [crewTable.workspaceId],
+    references: [workspaceTable.id],
+  }),
+  foreman: one(userTable, {
+    fields: [crewTable.foremanUserId],
+    references: [userTable.id],
+  }),
+  members: many(crewMemberTable),
+  dailyReports: many(dailyReportTable),
+  productionEntries: many(productionEntryTable),
+}));
+
+export const crewMemberTableRelations = relations(
+  crewMemberTable,
+  ({ one }) => ({
+    crew: one(crewTable, {
+      fields: [crewMemberTable.crewId],
+      references: [crewTable.id],
+    }),
+    user: one(userTable, {
+      fields: [crewMemberTable.userId],
+      references: [userTable.id],
+    }),
+  }),
+);
+
+export const equipmentTableRelations = relations(
+  equipmentTable,
+  ({ one, many }) => ({
+    workspace: one(workspaceTable, {
+      fields: [equipmentTable.workspaceId],
+      references: [workspaceTable.id],
+    }),
+    entries: many(equipmentEntryTable),
+  }),
+);
+
+export const constructionUnitTableRelations = relations(
+  constructionUnitTable,
+  ({ one, many }) => ({
+    workspace: one(workspaceTable, {
+      fields: [constructionUnitTable.workspaceId],
+      references: [workspaceTable.id],
+    }),
+    payItems: many(payItemTable),
+  }),
+);
+
+export const payItemTableRelations = relations(
+  payItemTable,
+  ({ one, many }) => ({
+    project: one(projectTable, {
+      fields: [payItemTable.projectId],
+      references: [projectTable.id],
+    }),
+    constructionUnit: one(constructionUnitTable, {
+      fields: [payItemTable.constructionUnitId],
+      references: [constructionUnitTable.id],
+    }),
+    gridAsset: one(gridAssetTable, {
+      fields: [payItemTable.gridAssetId],
+      references: [gridAssetTable.id],
+    }),
+    productionEntries: many(productionEntryTable),
+  }),
+);
+
+export const dailyReportTableRelations = relations(
+  dailyReportTable,
+  ({ one, many }) => ({
+    project: one(projectTable, {
+      fields: [dailyReportTable.projectId],
+      references: [projectTable.id],
+    }),
+    crew: one(crewTable, {
+      fields: [dailyReportTable.crewId],
+      references: [crewTable.id],
+    }),
+    foreman: one(userTable, {
+      fields: [dailyReportTable.foremanUserId],
+      references: [userTable.id],
+    }),
+    tailboard: one(tailboardTable),
+    laborEntries: many(laborEntryTable),
+    equipmentEntries: many(equipmentEntryTable),
+    productionEntries: many(productionEntryTable),
+  }),
+);
+
+export const tailboardTableRelations = relations(tailboardTable, ({ one }) => ({
+  dailyReport: one(dailyReportTable, {
+    fields: [tailboardTable.dailyReportId],
+    references: [dailyReportTable.id],
+  }),
+}));
+
+export const laborEntryTableRelations = relations(
+  laborEntryTable,
+  ({ one }) => ({
+    dailyReport: one(dailyReportTable, {
+      fields: [laborEntryTable.dailyReportId],
+      references: [dailyReportTable.id],
+    }),
+    user: one(userTable, {
+      fields: [laborEntryTable.userId],
+      references: [userTable.id],
+    }),
+  }),
+);
+
+export const equipmentEntryTableRelations = relations(
+  equipmentEntryTable,
+  ({ one }) => ({
+    dailyReport: one(dailyReportTable, {
+      fields: [equipmentEntryTable.dailyReportId],
+      references: [dailyReportTable.id],
+    }),
+    equipment: one(equipmentTable, {
+      fields: [equipmentEntryTable.equipmentId],
+      references: [equipmentTable.id],
+    }),
+  }),
+);
+
+export const productionEntryTableRelations = relations(
+  productionEntryTable,
+  ({ one }) => ({
+    project: one(projectTable, {
+      fields: [productionEntryTable.projectId],
+      references: [projectTable.id],
+    }),
+    payItem: one(payItemTable, {
+      fields: [productionEntryTable.payItemId],
+      references: [payItemTable.id],
+    }),
+    dailyReport: one(dailyReportTable, {
+      fields: [productionEntryTable.dailyReportId],
+      references: [dailyReportTable.id],
+    }),
+    crew: one(crewTable, {
+      fields: [productionEntryTable.crewId],
+      references: [crewTable.id],
+    }),
+    enteredBy: one(userTable, {
+      fields: [productionEntryTable.enteredByUserId],
+      references: [userTable.id],
     }),
   }),
 );

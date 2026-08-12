@@ -1304,6 +1304,441 @@ export const inspectionTable = pgTable(
   ],
 );
 
+/* ------------------------------------------------------------------------------------
+ * Utility domain: who does the work, what it is worth, and what got installed.
+ *
+ * Utility construction is billed and measured in construction units (CUs): utility-defined
+ * codes with a unit of measure, a standard manhour value, and a unit price. An estimate is
+ * a list of pay items (CU x quantity); production is the same list filled in as work is
+ * completed. That pairing is what makes earned value possible:
+ *
+ *   earned revenue = installed qty x unit price
+ *   earned hours   = installed qty x standard hours
+ *
+ * Comparing earned hours against actual hours from the daily reports is how a project
+ * manager knows whether a job is winning or losing.
+ * ---------------------------------------------------------------------------------- */
+
+export const crewTable = pgTable(
+  "crew",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    /** Crews are workspace-level: the same crew moves between projects. */
+    workspaceId: text("workspace_id")
+      .notNull()
+      .references(() => workspaceTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    name: text("name").notNull(),
+    /** line | substation | civil | underground | test | support */
+    crewType: text("crew_type").notNull().default("line"),
+    foremanUserId: text("foreman_user_id").references(() => userTable.id, {
+      onDelete: "set null",
+      onUpdate: "cascade",
+    }),
+    isActive: boolean("is_active").default(true).notNull(),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("crew_workspaceId_idx").on(table.workspaceId),
+    index("crew_foremanUserId_idx").on(table.foremanUserId),
+    unique("crew_workspace_name_unique").on(table.workspaceId, table.name),
+  ],
+);
+
+export const crewMemberTable = pgTable(
+  "crew_member",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    crewId: text("crew_id")
+      .notNull()
+      .references(() => crewTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => userTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    /** foreman | journeyman | apprentice | groundman | operator | technician */
+    classification: text("classification").notNull().default("journeyman"),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("crew_member_crewId_idx").on(table.crewId),
+    index("crew_member_userId_idx").on(table.userId),
+    unique("crew_member_crew_user_unique").on(table.crewId, table.userId),
+  ],
+);
+
+export const equipmentTable = pgTable(
+  "equipment",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    workspaceId: text("workspace_id")
+      .notNull()
+      .references(() => workspaceTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    /** Fleet number, the way equipment is actually referred to in the field. */
+    unitNumber: text("unit_number").notNull(),
+    description: text("description"),
+    /**
+     * digger_derrick | bucket | crane | puller | tensioner | pickup | trailer |
+     * dozer | excavator | other
+     */
+    equipmentType: text("equipment_type").notNull().default("other"),
+    /** Stored as text to avoid binary float rounding on money. */
+    hourlyRate: text("hourly_rate"),
+    isActive: boolean("is_active").default(true).notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("equipment_workspaceId_idx").on(table.workspaceId),
+    unique("equipment_workspace_unit_unique").on(
+      table.workspaceId,
+      table.unitNumber,
+    ),
+  ],
+);
+
+export const constructionUnitTable = pgTable(
+  "construction_unit",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    /** The catalog is workspace-level so one utility's codes serve all its projects. */
+    workspaceId: text("workspace_id")
+      .notNull()
+      .references(() => workspaceTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    /** The utility's code, e.g. an Avangrid PayCU or an Eversource CU number. */
+    code: text("code").notNull(),
+    description: text("description").notNull(),
+    /** EA | LF | CY | TON | HR | LS */
+    unitOfMeasure: text("unit_of_measure").notNull().default("EA"),
+    discipline: text("discipline"),
+    /**
+     * Standard manhours and prices per action. Utilities price installing, removing, and
+     * transferring the same unit differently -- a pole transfer is not a pole set.
+     * Text for exact decimal arithmetic.
+     */
+    installHours: text("install_hours"),
+    removeHours: text("remove_hours"),
+    transferHours: text("transfer_hours"),
+    installPrice: text("install_price"),
+    removePrice: text("remove_price"),
+    transferPrice: text("transfer_price"),
+    isActive: boolean("is_active").default(true).notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("construction_unit_workspaceId_idx").on(table.workspaceId),
+    index("construction_unit_code_idx").on(table.code),
+    unique("construction_unit_workspace_code_unique").on(
+      table.workspaceId,
+      table.code,
+    ),
+  ],
+);
+
+export const payItemTable = pgTable(
+  "pay_item",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    projectId: text("project_id")
+      .notNull()
+      .references(() => projectTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    constructionUnitId: text("construction_unit_id")
+      .notNull()
+      .references(() => constructionUnitTable.id, {
+        onDelete: "restrict",
+        onUpdate: "cascade",
+      }),
+    /** Optional: a pay item may be scoped to one structure or bay. */
+    gridAssetId: text("grid_asset_id").references(
+      (): AnyPgColumn => gridAssetTable.id,
+      { onDelete: "set null", onUpdate: "cascade" },
+    ),
+    /** install | remove | transfer | relocate */
+    action: text("action").notNull().default("install"),
+    estimatedQuantity: text("estimated_quantity").notNull().default("0"),
+    /**
+     * Snapshotted from the catalog at estimate time. The catalog can be repriced later
+     * without silently rewriting the value of work already bid.
+     */
+    unitPrice: text("unit_price"),
+    standardHours: text("standard_hours"),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("pay_item_projectId_idx").on(table.projectId),
+    index("pay_item_constructionUnitId_idx").on(table.constructionUnitId),
+    index("pay_item_gridAssetId_idx").on(table.gridAssetId),
+    unique("pay_item_project_unit_action_asset_unique").on(
+      table.projectId,
+      table.constructionUnitId,
+      table.action,
+      table.gridAssetId,
+    ),
+  ],
+);
+
+export const dailyReportTable = pgTable(
+  "daily_report",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    projectId: text("project_id")
+      .notNull()
+      .references(() => projectTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    crewId: text("crew_id").references(() => crewTable.id, {
+      onDelete: "set null",
+      onUpdate: "cascade",
+    }),
+    /** Date only in practice; stored as a timestamp for consistency with the schema. */
+    reportDate: timestamp("report_date", { mode: "date" }).notNull(),
+    foremanUserId: text("foreman_user_id").references(() => userTable.id, {
+      onDelete: "set null",
+      onUpdate: "cascade",
+    }),
+    weatherConditions: text("weather_conditions"),
+    temperatureHigh: text("temperature_high"),
+    temperatureLow: text("temperature_low"),
+    workPerformed: text("work_performed"),
+    delays: text("delays"),
+    visitors: text("visitors"),
+    safetyTopic: text("safety_topic"),
+    /** draft | submitted | approved */
+    status: text("status").notNull().default("draft"),
+    submittedAt: timestamp("submitted_at", { mode: "date" }),
+    approvedByUserId: text("approved_by_user_id").references(
+      () => userTable.id,
+      { onDelete: "set null", onUpdate: "cascade" },
+    ),
+    approvedAt: timestamp("approved_at", { mode: "date" }),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("daily_report_projectId_idx").on(table.projectId),
+    index("daily_report_crewId_idx").on(table.crewId),
+    index("daily_report_reportDate_idx").on(table.reportDate),
+    index("daily_report_status_idx").on(table.status),
+    // One report per crew per day; a second one is a duplicate, not a revision.
+    unique("daily_report_project_crew_date_unique").on(
+      table.projectId,
+      table.crewId,
+      table.reportDate,
+    ),
+  ],
+);
+
+/**
+ * The crew's tailboard / JHA for the day. A separate record because it is a distinct
+ * signed safety artifact, not a note on the report.
+ */
+export const tailboardTable = pgTable(
+  "tailboard",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    dailyReportId: text("daily_report_id")
+      .notNull()
+      .unique()
+      .references(() => dailyReportTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    jobSteps: text("job_steps"),
+    hazards: text("hazards"),
+    controls: text("controls"),
+    /** Minimum approach distance for the voltage being worked. */
+    minimumApproachDistance: text("minimum_approach_distance"),
+    groundingPlan: text("grounding_plan"),
+    emergencyPlan: text("emergency_plan"),
+    /** [{ name, userId?, signedAt }] -- crews include people without accounts. */
+    signatures: jsonb("signatures"),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [index("tailboard_dailyReportId_idx").on(table.dailyReportId)],
+);
+
+/**
+ * Payroll hours per person per day. Separate from `time_entry`, which is a per-task
+ * stopwatch with no notion of overtime or classification.
+ */
+export const laborEntryTable = pgTable(
+  "labor_entry",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    dailyReportId: text("daily_report_id")
+      .notNull()
+      .references(() => dailyReportTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    userId: text("user_id").references(() => userTable.id, {
+      onDelete: "set null",
+      onUpdate: "cascade",
+    }),
+    /** Crews include people without accounts, so a name is always kept. */
+    workerName: text("worker_name").notNull(),
+    classification: text("classification").notNull().default("journeyman"),
+    regularHours: text("regular_hours").notNull().default("0"),
+    overtimeHours: text("overtime_hours").notNull().default("0"),
+    doubleTimeHours: text("double_time_hours").notNull().default("0"),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("labor_entry_dailyReportId_idx").on(table.dailyReportId),
+    index("labor_entry_userId_idx").on(table.userId),
+  ],
+);
+
+export const equipmentEntryTable = pgTable(
+  "equipment_entry",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    dailyReportId: text("daily_report_id")
+      .notNull()
+      .references(() => dailyReportTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    equipmentId: text("equipment_id")
+      .notNull()
+      .references(() => equipmentTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    hoursUsed: text("hours_used").notNull().default("0"),
+    hoursIdle: text("hours_idle").notNull().default("0"),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("equipment_entry_dailyReportId_idx").on(table.dailyReportId),
+    index("equipment_entry_equipmentId_idx").on(table.equipmentId),
+    unique("equipment_entry_report_equipment_unique").on(
+      table.dailyReportId,
+      table.equipmentId,
+    ),
+  ],
+);
+
+/**
+ * Quantity of a pay item installed on a date. This is the row that drives billing and
+ * earned value, so it keeps its own project and date rather than relying on the daily
+ * report -- office staff also post production against a period without a field report.
+ */
+export const productionEntryTable = pgTable(
+  "production_entry",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    projectId: text("project_id")
+      .notNull()
+      .references(() => projectTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    payItemId: text("pay_item_id")
+      .notNull()
+      .references(() => payItemTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    dailyReportId: text("daily_report_id").references(
+      () => dailyReportTable.id,
+      { onDelete: "set null", onUpdate: "cascade" },
+    ),
+    crewId: text("crew_id").references(() => crewTable.id, {
+      onDelete: "set null",
+      onUpdate: "cascade",
+    }),
+    quantity: text("quantity").notNull().default("0"),
+    entryDate: timestamp("entry_date", { mode: "date" }).notNull(),
+    enteredByUserId: text("entered_by_user_id").references(() => userTable.id, {
+      onDelete: "set null",
+      onUpdate: "cascade",
+    }),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("production_entry_projectId_idx").on(table.projectId),
+    index("production_entry_payItemId_idx").on(table.payItemId),
+    index("production_entry_dailyReportId_idx").on(table.dailyReportId),
+    index("production_entry_crewId_idx").on(table.crewId),
+    index("production_entry_entryDate_idx").on(table.entryDate),
+  ],
+);
+
 // Auth-schema compatible aliases in schema.ts
 export const user = userTable;
 export const session = sessionTable;

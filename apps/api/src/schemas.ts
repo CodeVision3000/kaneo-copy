@@ -127,6 +127,96 @@ export const inspectionSchema = v.object({
   taskTitle: v.optional(v.nullable(v.string())),
 });
 
+export const constructionUnitSchema = v.object({
+  id: v.string(),
+  workspaceId: v.string(),
+  code: v.string(),
+  description: v.string(),
+  unitOfMeasure: v.string(),
+  discipline: v.nullable(v.string()),
+  installHours: v.nullable(v.string()),
+  removeHours: v.nullable(v.string()),
+  transferHours: v.nullable(v.string()),
+  installPrice: v.nullable(v.string()),
+  removePrice: v.nullable(v.string()),
+  transferPrice: v.nullable(v.string()),
+  isActive: v.boolean(),
+  createdAt: v.date(),
+  updatedAt: v.date(),
+});
+
+export const payItemSchema = v.object({
+  id: v.string(),
+  projectId: v.string(),
+  constructionUnitId: v.string(),
+  gridAssetId: v.nullable(v.string()),
+  action: v.string(),
+  estimatedQuantity: v.string(),
+  unitPrice: v.nullable(v.string()),
+  standardHours: v.nullable(v.string()),
+  notes: v.nullable(v.string()),
+  createdAt: v.date(),
+  updatedAt: v.date(),
+  code: v.optional(v.string()),
+  description: v.optional(v.string()),
+  unitOfMeasure: v.optional(v.string()),
+  gridAssetDesignation: v.optional(v.nullable(v.string())),
+  installedQuantity: v.optional(v.string()),
+});
+
+export const productionEntrySchema = v.object({
+  id: v.string(),
+  projectId: v.string(),
+  payItemId: v.string(),
+  dailyReportId: v.nullable(v.string()),
+  crewId: v.nullable(v.string()),
+  quantity: v.string(),
+  entryDate: v.date(),
+  enteredByUserId: v.nullable(v.string()),
+  notes: v.nullable(v.string()),
+  createdAt: v.date(),
+  updatedAt: v.date(),
+  code: v.optional(v.string()),
+  description: v.optional(v.string()),
+  unitOfMeasure: v.optional(v.string()),
+  action: v.optional(v.string()),
+  crewName: v.optional(v.nullable(v.string())),
+});
+
+export const earnedValueSchema = v.object({
+  items: v.array(
+    v.object({
+      payItemId: v.string(),
+      action: v.string(),
+      code: v.string(),
+      description: v.string(),
+      unitOfMeasure: v.string(),
+      gridAssetDesignation: v.nullable(v.string()),
+      estimatedQuantity: v.string(),
+      unitPrice: v.string(),
+      standardHours: v.string(),
+      installedQuantity: v.string(),
+      budgetValue: v.string(),
+      budgetHours: v.string(),
+      earnedValue: v.string(),
+      earnedHours: v.string(),
+      percentComplete: v.number(),
+      remainingValue: v.number(),
+    }),
+  ),
+  totals: v.object({
+    budgetValue: v.number(),
+    earnedValue: v.number(),
+    remainingValue: v.number(),
+    budgetHours: v.number(),
+    earnedHours: v.number(),
+    actualHours: v.number(),
+    hoursVariance: v.number(),
+    productivityFactor: v.nullable(v.number()),
+    percentComplete: v.number(),
+  }),
+});
+
 export const taskSchema = v.object({
   id: v.string(),
   projectId: v.string(),
