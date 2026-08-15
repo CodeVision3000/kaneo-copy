@@ -1,5 +1,6 @@
 {
   "name": "kaneo",
+  "description": "CodeVision3000 fork of Kaneo, a self-hosted project management platform",
   "private": false,
   "type": "module",
   "scripts": {
