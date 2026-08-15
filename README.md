@@ -7,7 +7,7 @@
 <div align="center">
 
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/usekaneo/kaneo/ci.yml?branch=main)](https://github.com/usekaneo/kaneo/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/CodeVision3000/kaneo-copy/ci.yml?branch=main)](https://github.com/CodeVision3000/kaneo-copy/actions)
 [![Discord](https://img.shields.io/discord/1326250681530843178?color=7389D8&label=&logo=discord&logoColor=ffffff)](https://discord.gg/rU4tSyhXXU)
 [![Sponsors](https://img.shields.io/github/sponsors/andrejsshell)](https://github.com/sponsors/andrejsshell)
 
@@ -29,6 +29,8 @@
 <p align="center">
   <img src="https://assets.kaneo.app/readme.png" alt="Kaneo Dashboard" />
 </p>
+
+> **Fork note:** This repository (`CodeVision3000/kaneo-copy`) is a fork of the original [usekaneo/kaneo](https://github.com/usekaneo/kaneo), maintained here with our own changes and deployment workflow.
 
 ## Why Kaneo?
 
@@ -131,8 +133,8 @@ Want to hack on Kaneo? See our [Environment Setup Guide](ENVIRONMENT_SETUP.md) f
 Quick start:
 ```bash
 # Clone and install dependencies
-git clone https://github.com/usekaneo/kaneo.git
-cd kaneo
+git clone https://github.com/CodeVision3000/kaneo-copy.git
+cd kaneo-copy
 pnpm install
 
 # Create a .env file in the root with required environment variables
@@ -147,7 +149,7 @@ For contributing guidelines, code structure, and development best practices, che
 ## Community
 
 - **[Discord](https://discord.gg/rU4tSyhXXU)** - Chat with users and contributors
-- **[GitHub Issues](https://github.com/usekaneo/kaneo/issues)** - Bug reports and feature requests
+- **[GitHub Issues](https://github.com/CodeVision3000/kaneo-copy/issues)** - Bug reports and feature requests
 - **[Documentation](https://kaneo.app/docs/core)** - Detailed guides, API docs, and tutorials
 
 ## Contributing
